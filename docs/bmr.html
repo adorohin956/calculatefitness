@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Базальный метаболизм / Миффлин PRO — Формулы здоровья</title>
+  <meta name="description" content="Рассчитайте базальный метаболизм (BMR) по трём формулам. PRO-режим: TDEE и три сценария калорий с БЖУ по методологии Миффлина-Джеора.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .tab-switcher{display:flex;gap:3px;padding:4px;background:var(--bg);border:1px solid var(--border);border-radius:10px;width:fit-content;margin-bottom:24px;}
+    .tab-btn{padding:8px 22px;border-radius:7px;font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;transition:all var(--transition);background:transparent;color:var(--text-muted);}
+    .tab-btn:hover{color:var(--text);}
+    .tab-btn.active-basic{background:rgba(0,0,0,0.05);color:var(--text);}
+    .tab-btn.active-pro{background:linear-gradient(135deg,rgba(180,140,60,0.25),rgba(160,110,200,0.2));color:#c9a84c;border:1px solid rgba(180,140,60,0.3);}
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;animation:fadeUp .25s ease both;}
+    .scenario-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 18px;margin-bottom:8px;}
+    .scenario-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px;}
+    .scenario-title{font-size:13px;font-weight:600;}
+    .scenario-kcal{font-size:20px;font-weight:700;}
+    .scenario-bju{display:flex;gap:12px;font-size:11.5px;color:var(--text-muted);margin-top:6px;}
+    .scenario-bju span{display:flex;flex-direction:column;gap:2px;}
+    .scenario-bju strong{font-size:13px;font-weight:600;}
+  </style>
+  <meta property="og:title" content="Базальный метаболизм / Миффлин PRO — Формулы здоровья">
+  <meta property="og:description" content="Рассчитайте базальный метаболизм (BMR) по трём формулам. PRO-режим: TDEE и три сценария калорий с БЖУ по методологии Миффлина-Джеора.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/bmr.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">⚡</span> Базальный метаболизм</h1>
+      <p>BMR по трём формулам + Миффлин PRO: TDEE и все сценарии</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Базальный метаболизм</span></nav>
+
+    <div class="tab-switcher">
+      <button class="tab-btn active-basic" id="tab-basic" onclick="switchTab('basic')">Базовый</button>
+      <button class="tab-btn" id="tab-pro" onclick="switchTab('pro')">⭐ PRO</button>
+    </div>
+
+    <!-- ══════════════════ БАЗОВЫЙ ══════════════════ -->
+    <div class="tab-pane active" id="pane-basic">
+      <fieldset><legend>Пол</legend>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="gender_b" value="male" checked> Мужской</label>
+        <label class="radio-option"><input type="radio" name="gender_b" value="female"> Женский</label>
+      </div>
+      </fieldset>
+      <div class="form-group"><label for="age_b">Возраст (лет)</label><input type="number" id="age_b" placeholder="25" min="10" max="100"></div>
+      <div class="form-group"><label for="height_b">Рост (см)</label><input type="number" id="height_b" placeholder="175" min="100" max="250"></div>
+      <div class="form-group"><label for="weight_b">Вес (кг)</label><input type="number" id="weight_b" placeholder="70" min="30" max="300"></div>
+      <button class="btn-calculate" style="background:linear-gradient(135deg,#c94b3b,#a03020);" onclick="calcBasic()">Рассчитать BMR</button>
+      <div id="result_b" style="display:none;margin-top:24px;">
+        <p class="result-title">Базальный метаболизм (ккал/сутки)</p>
+        <div class="result-list" id="bmrList"></div>
+        <div class="info-block" style="margin-top:14px;">
+          <h3>Что такое BMR?</h3>
+          <p>Количество калорий, которое организм тратит в полном покое. Это минимум, ниже которого нельзя опускаться. Умножьте BMR на коэффициент активности, чтобы получить суточную норму (TDEE).</p>
+        </div>
+        <p style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-muted)">* Миффлин наиболее точна для большинства людей</p>
+        <button class="share-btn" id="share-btn-b" onclick="shareBasic()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════ PRO ══════════════════ -->
+    <div class="tab-pane" id="pane-pro">
+      <div class="formula-box" style="background:rgba(0,0,0,0.35);border:1px solid rgba(180,140,60,0.2);border-radius:var(--radius-sm);padding:14px 16px;font-family:var(--font-mono);font-size:12.5px;color:#c9a84c;margin-bottom:20px;line-height:1.7;">
+        Мужчины: BMR = 10×вес + 6,25×рост − 5×возраст + 5
+        Женщины: BMR = 10×вес + 6,25×рост − 5×возраст − 161
+        TDEE = BMR × коэффициент активности
+      </div>
+      <fieldset><legend>Пол</legend>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="gender_p" value="male" checked> Мужской</label>
+        <label class="radio-option"><input type="radio" name="gender_p" value="female"> Женский</label>
+      </div>
+      </fieldset>
+      <div class="form-group"><label for="age_p">Возраст (лет)</label><input type="number" id="age_p" placeholder="28" min="14" max="90"></div>
+      <div class="form-group"><label for="height_p">Рост (см)</label><input type="number" id="height_p" placeholder="175" min="140" max="220"></div>
+      <div class="form-group"><label for="weight_p">Вес (кг)</label><input type="number" id="weight_p" placeholder="75" min="30" max="200"></div>
+      <div class="form-group">
+        <label>Уровень активности</label>
+        <select id="activity_p">
+          <option value="1.2">1,2 — Минимальный (сидячая работа)</option>
+          <option value="1.375">1,375 — Низкий (1–3 тренировки/нед)</option>
+          <option value="1.55" selected>1,55 — Умеренный (3–5 тренировок)</option>
+          <option value="1.725">1,725 — Высокий (6–7 тренировок)</option>
+          <option value="1.9">1,9 — Экстремальный</option>
+        </select>
+      </div>
+      <button class="btn-calculate btn-calc-pro" onclick="calcPro()">Рассчитать TDEE и сценарии</button>
+      <div id="result_p" style="display:none;margin-top:24px;">
+        <p class="result-title">Энергетический баланс</p>
+        <div class="results-grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;">
+          <div class="result-card"><h4>Основной обмен (BMR)</h4><span class="result-value" id="rBmr" style="color:#c9a84c">—</span><span class="unit">ккал</span></div>
+          <div class="result-card"><h4>TDEE (поддержание)</h4><span class="result-value" id="rTdee" style="color:#a06bc8">—</span><span class="unit">ккал</span></div>
+        </div>
+        <p class="result-title" style="margin-top:16px;">Три сценария</p>
+        <div id="scenarios"></div>
+        <div class="pro-explain" style="margin-top:16px;">
+          <h3>📖 Что означают эти цифры</h3>
+          <p><strong>BMR</strong> — минимум для жизни. <strong>TDEE</strong> — точка баланса веса. Дефицит от TDEE — похудение; профицит — набор. Формула Миффлина погрешность ±10%, поэтому проверяй результат через 2 недели реального питания.</p>
+        </div>
+        <button class="share-btn" id="share-btn-p" onclick="sharePro()">📋 Скопировать результат</button>
+      </div>
+    </div>
+
+    <!-- RELATED -->
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#calories" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Методология расчёта BMR →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="calories.html" class="related-card"><span class="related-card-icon">🔥</span><span class="related-card-name">Калькулятор калорий</span><span class="related-card-hint">Суточная норма TDEE</span></a>
+        <a href="bju.html" class="related-card"><span class="related-card-icon">🥗</span><span class="related-card-name">БЖУ калькулятор</span><span class="related-card-hint">Белки, жиры, углеводы</span></a>
+        <a href="pro_weight_loss.html" class="related-card"><span class="related-card-icon">📉</span><span class="related-card-name">Безопасный дефицит</span><span class="related-card-hint">Темп похудения</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'bmr';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p></footer>
+  </div></main>
+
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+  <script>
+  function showErr(id,msg){const el=document.getElementById(id);if(!el)return;let e=el.parentNode.querySelector('.field-error');if(!e){e=document.createElement('div');e.className='field-error';el.parentNode.appendChild(e);}e.innerHTML='⚠️ '+msg;e.classList.add('visible');el.style.borderColor='rgba(255,107,107,0.7)';el.addEventListener('input',function c(){e.classList.remove('visible');el.style.borderColor='';el.removeEventListener('input',c);},{once:true});}
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-basic').className = 'tab-btn' + (tab==='basic'?' active-basic':'');
+    document.getElementById('tab-pro').className   = 'tab-btn' + (tab==='pro'?' active-pro':'');
+    document.getElementById('pane-'+tab).classList.add('active');
+  }
+
+  function calcBasic() {
+    const g=document.querySelector('input[name="gender_b"]:checked').value;
+    const age=+document.getElementById('age_b').value;
+    const h=+document.getElementById('height_b').value;
+    const w=+document.getElementById('weight_b').value;
+    if(!age){showErr('age_b','Введите возраст');return;}
+    if(!h){showErr('height_b','Введите рост');return;}
+    if(!w){showErr('weight_b','Введите вес');return;}
+    const m=g==='male';
+    const formulas=[
+      {name:'Миффлин-Сан Жеор',note:'Рекомендуется — наиболее точная',val:m?10*w+6.25*h-5*age+5:10*w+6.25*h-5*age-161},
+      {name:'Харрис-Бенедикт',note:'Классика 1919 г., пересмотрена в 1984',val:m?88.36+13.4*w+4.8*h-5.7*age:447.6+9.2*w+3.1*h-4.3*age},
+      {name:'Кэтч-МакАрдл',note:'Учитывает только сухую массу (приблизительно)',val:370+21.6*(w*0.82)},
+    ];
+    document.getElementById('bmrList').innerHTML=formulas.map(f=>`
+      <div class="result-item" style="flex-direction:column;align-items:flex-start;gap:4px;">
+        <div style="display:flex;justify-content:space-between;width:100%">
+          <span style="font-weight:500;color:var(--text)">${f.name}</span>
+          <span class="val">${Math.round(f.val)} ккал</span>
+        </div>
+        <span style="font-size:11px;color:var(--text-muted)">${f.note}</span>
+      </div>`).join('');
+    document.getElementById('result_b').style.display='block';
+    document.getElementById('share-btn-b').style.display='inline-flex';
+      document.getElementById('save-history-btn').style.display='flex';
+    if(window.HistoryModule)HistoryModule.saveToHistory({calc:'bmr',label:'Базальный метаболизм',result:Math.round(formulas[0].val)+' ккал (Миффлин)',date:HistoryModule.formatDate(),href:'bmr.html',params:{age,height:h,weight:w,gender:g}});
+      if(window.App)App.saveCalc('bmr',{age,height:h,weight:w,gender:g},Math.round(formulas[0].val)+' ккал (Миффлин)','Базальный метаболизм');
+  }
+
+  function calcPro() {
+    const sex=document.querySelector('input[name="gender_p"]:checked').value;
+    const age=+document.getElementById('age_p').value;
+    const h=+document.getElementById('height_p').value;
+    const w=+document.getElementById('weight_p').value;
+    const act=+document.getElementById('activity_p').value;
+    if(!age){showErr('age_p','Введи возраст');return;}
+    if(!h){showErr('height_p','Введи рост');return;}
+    if(!w){showErr('weight_p','Введи вес');return;}
+    const bmr=sex==='male'?10*w+6.25*h-5*age+5:10*w+6.25*h-5*age-161;
+    const tdee=Math.round(bmr*act);
+    document.getElementById('rBmr').textContent=Math.round(bmr);
+    document.getElementById('rTdee').textContent=tdee;
+    const scenarios=[
+      {title:'Похудение (дефицит ~18%)',color:'#3d8fd4',kcal:Math.round(tdee*0.82),note:'Умеренный дефицит — сохраняет мышцы. ~0.5–0.7 кг/нед.',prot:Math.round(w*1.8),fat:Math.round(tdee*0.82*0.27/9),carb:null},
+      {title:'Поддержание веса',color:'#29a86a',kcal:tdee,note:'Энергетический баланс. Вес стоит.',prot:Math.round(w*1.4),fat:Math.round(tdee*0.28/9),carb:null},
+      {title:'Набор массы (профицит ~12%)',color:'#c9a84c',kcal:Math.round(tdee*1.12),note:'Умеренный профицит — рост мышц. ~0.2–0.3 кг/нед.',prot:Math.round(w*2.0),fat:Math.round(tdee*1.12*0.25/9),carb:null},
+    ];
+    scenarios.forEach(s=>{s.carb=Math.max(0,Math.round((s.kcal-s.prot*4-s.fat*9)/4));});
+    document.getElementById('scenarios').innerHTML=scenarios.map(s=>`
+      <div class="scenario-card" style="border-left:3px solid ${s.color}">
+        <div class="scenario-header">
+          <span class="scenario-title" style="color:${s.color}">${s.title}</span>
+          <span class="scenario-kcal" style="color:${s.color}">${s.kcal} ккал</span>
+        </div>
+        <p style="font-size:11.5px;color:var(--text-muted);margin-bottom:10px;">${s.note}</p>
+        <div class="scenario-bju">
+          <span><span style="color:var(--text-muted)">Белки</span><strong style="color:#3d8fd4">${s.prot} г</strong></span>
+          <span><span style="color:var(--text-muted)">Жиры</span><strong style="color:#d48a1a">${s.fat} г</strong></span>
+          <span><span style="color:var(--text-muted)">Углеводы</span><strong style="color:var(--green)">${s.carb} г</strong></span>
+        </div>
+      </div>`).join('');
+    document.getElementById('result_p').style.display='block';
+    document.getElementById('share-btn-p').style.display='inline-flex';
+    if(window.HistoryModule)HistoryModule.saveToHistory({calc:'bmr',label:'Миффлин-Джеор PRO',result:tdee+' ккал TDEE',date:HistoryModule.formatDate(),href:'bmr.html',params:{age,height:h,weight:w,gender:sex}});
+      if(window.App)App.saveCalc('bmr',{age,height:h,weight:w,gender:sex},tdee+' ккал TDEE','Миффлин-Джеор PRO');
+  }
+
+  function shareBasic(){
+    const val=document.querySelector('#bmrList .val')?.textContent||'';
+    copyResult('Базальный метаболизм',val,'share-btn-b');
+  }
+  function sharePro(){
+    const val=document.getElementById('rTdee')?.textContent+' ккал TDEE';
+    copyResult('Миффлин PRO',val,'share-btn-p');
+  }
+  function copyResult(label,val,btnId){
+    const text=label+': '+val+' | calculatefitness.pro';
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.getElementById(btnId);
+      btn.innerHTML='✓ Скопировано!';btn.classList.add('copied');
+      setTimeout(()=>{btn.innerHTML='📋 Скопировать результат';btn.classList.remove('copied');},2000);
+    }).catch(()=>{});
+  }
+
+  // Auto-open PRO tab if #pro in URL
+  if(location.hash==='#pro'){switchTab('pro');}
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

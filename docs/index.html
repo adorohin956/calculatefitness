@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Формулы здоровья</title>
+  <meta name="description" content="Профессиональные фитнес-калькуляторы от тренера и нутрициолога. Рассчитайте калории, ИМТ, процент жира, нормы БЖУ, пульсовые зоны и многое другое.">
+  <meta name="theme-color" content="#E8E1D6">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* Index-specific overrides */
+    .page--index {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: var(--space-2xl) var(--space-lg) 80px;
+      min-height: auto;
+      display: block;
+    }
+    /* Animations */
+    @keyframes revealUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes revealBlur {
+      from { opacity: 0; filter: blur(8px); transform: translateY(12px); }
+      to   { opacity: 1; filter: blur(0); transform: translateY(0); }
+    }
+    @keyframes drawLine {
+      from { stroke-dashoffset: 300; }
+      to   { stroke-dashoffset: 0; }
+    }
+    .reveal { opacity: 0; animation: revealUp 0.7s var(--ease) forwards; }
+    .reveal-blur { opacity: 0; animation: revealBlur 0.8s var(--ease) forwards; }
+    .d1{animation-delay:.05s} .d2{animation-delay:.12s} .d3{animation-delay:.2s}
+    .d4{animation-delay:.28s} .d5{animation-delay:.36s} .d6{animation-delay:.44s}
+    .d7{animation-delay:.52s} .d8{animation-delay:.6s}
+
+    /* Index header overrides */
+    .page--index .site-header {
+      display: flex; align-items: flex-end;
+      justify-content: space-between; gap: var(--space-xl);
+      margin-bottom: 40px; padding-bottom: var(--space-xl);
+      border-bottom: 1px solid var(--border);
+    }
+    .header-content { flex: 1; }
+    .page--index .site-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px; letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--sage); margin-bottom: 12px; font-weight: 500;
+    }
+    .page--index .site-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(36px, 6vw, 54px);
+      font-weight: 400; line-height: 1.05;
+      letter-spacing: -1px; color: var(--text); margin-bottom: var(--space-sm);
+    }
+    .page--index .site-header h1 em { font-style: italic; color: var(--sage); }
+    .page--index .subtitle { font-size: 15px; color: var(--text-muted); line-height: 1.6; max-width: 380px; }
+    .header-art { flex-shrink: 0; width: 140px; height: 100px; }
+    .header-art svg { width: 100%; height: 100%; }
+    .pulse-line {
+      fill: none; stroke: var(--sage); stroke-width: 1.8;
+      stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 300; stroke-dashoffset: 300;
+      animation: drawLine 2s var(--ease) 0.3s forwards;
+    }
+
+    /* Index nav overrides */
+    .page--index #user-widget { margin-bottom: var(--space-xs); }
+
+    /* Index footer overrides */
+    .page--index footer { margin-top: 44px; padding-top: var(--space-xl); }
+    .footer-sig {
+      font-family: var(--font-display); font-style: italic;
+      font-size: 18px; color: var(--text-muted); margin-bottom: var(--space-sm); opacity: 0.6;
+    }
+    .page--index footer p { font-size: 12px; color: var(--text-muted); line-height: 2; }
+
+    /* Index user widget overrides */
+    .page--index .uw-btn {
+      padding: 7px 14px; border-radius: 7px; font-size: 12px;
+    }
+    .page--index .uw-btn:hover { background: var(--bg-card); border-color: var(--sage); color: var(--text); }
+    .page--index .uw-logged { font-size: 12.5px; }
+    .page--index .uw-btn-sm { font-size: 12px; }
+
+    /* Index auth modal overrides */
+    .page--index .auth-modal-backdrop { background: rgba(28,25,23,.25); backdrop-filter: blur(12px); }
+    .page--index .auth-modal-card { border-radius: 20px; box-shadow: 0 24px 60px rgba(0,0,0,.1); }
+    .page--index .auth-tab.active { background: var(--sage-soft); border-color: var(--sage); }
+    .page--index .auth-error { background: var(--terra-soft); border-color: rgba(192,94,60,.15); color: var(--terra); }
+    .page--index .auth-submit { background: var(--sage); }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .page--index { padding: var(--space-lg) 14px 60px; }
+      .page--index .site-header { flex-direction: column; align-items: flex-start; gap: var(--space-md); }
+      .header-art { display: none; }
+      .ai-banner { padding: 18px 20px; gap: 14px; }
+      .page--index .nav-bar { flex-wrap: wrap; }
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+
+  <main id="main" class="page page--index">
+
+    <header class="site-header reveal-blur d1">
+      <div class="header-content">
+        <p class="site-eyebrow">Персональный тренер · Нутрициолог</p>
+        <h1>Формулы<br><em>здоровья</em></h1>
+        <p class="subtitle">Калькуляторы для контроля состава тела, питания и тренировок</p>
+      </div>
+      <div class="header-art">
+        <svg viewBox="0 0 160 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path class="pulse-line" d="M0 58 Q20 58 28 58 L38 58 42 28 48 78 54 18 60 68 66 38 72 58 Q80 58 95 58 L100 58 Q115 56 120 48 Q128 38 135 52 Q140 60 148 58 L160 58"/>
+          <circle cx="54" cy="18" r="2.5" fill="var(--sage)" opacity="0.4">
+            <animate attributeName="opacity" values="0.4;0.8;0.4" dur="2.5s" repeatCount="indefinite"/>
+          </circle>
+          <circle cx="48" cy="78" r="2" fill="var(--terra)" opacity="0.3">
+            <animate attributeName="opacity" values="0.3;0.6;0.3" dur="3s" repeatCount="indefinite"/>
+          </circle>
+        </svg>
+      </div>
+    </header>
+
+    <div id="user-widget" class="reveal d2"></div>
+    <nav class="nav-bar reveal d2">
+      <a href="aboutme.html">Об авторе</a>
+      <a href="methods.html">Методы расчёта</a>
+      <span class="nav-separator"></span>
+      <button id="forget-all-btn" onclick="openResetModal()">Сбросить данные</button>
+    </nav>
+
+    <div id="history-block" style="display:none;margin-bottom:20px;"></div>
+
+    <a href="nutrition_ai.html" class="ai-banner reveal d3">
+      <div class="ai-glow">
+        <div class="ai-glow-ring"></div>
+        <div class="ai-glow-core">🧠</div>
+      </div>
+      <div class="ai-text">
+        <p class="ai-title">AI-разбор твоего питания</p>
+        <p class="ai-sub">12 вопросов → анализ рациона, ошибки и план питания на день</p>
+      </div>
+      <span class="ai-arrow">→</span>
+    </a>
+
+    <div class="bento-grid">
+      <button class="cat-card hero reveal d4" style="--cat-accent:var(--sage);--cat-soft:var(--sage-soft);" onclick="toggle('food')" aria-expanded="false" aria-controls="panel-food">
+        <div class="cat-art">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+          </svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div><h3>Питание и калории</h3><p class="cat-meta">5 инструментов</p></div>
+            <div class="cat-chevron-wrap">▾</div>
+          </div>
+          <div class="cat-preview">
+            <span class="cat-preview-tag">🔥 Калории TDEE</span>
+            <span class="cat-preview-tag">🥗 БЖУ</span>
+            <span class="cat-preview-tag">💧 Норма воды</span>
+          </div>
+        </div>
+      </button>
+
+      <button class="cat-card reveal d5" style="--cat-accent:var(--indigo);--cat-soft:var(--indigo-soft);" onclick="toggle('anthro')" aria-expanded="false" aria-controls="panel-anthro">
+        <div class="cat-top-row">
+          <div class="cat-art">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"/><path d="M7 16l4-8 4 4 5-10"/>
+            </svg>
+          </div>
+          <div class="cat-chevron-wrap">▾</div>
+        </div>
+        <h3>Антропометрия и состав тела</h3>
+        <p class="cat-meta">6 инструментов</p>
+        <div class="cat-preview">
+          <span class="cat-preview-tag">📊 ИМТ</span>
+          <span class="cat-preview-tag">💪 % жира</span>
+        </div>
+      </button>
+
+      <button class="cat-card reveal d6" style="--cat-accent:var(--terra);--cat-soft:var(--terra-soft);" onclick="toggle('cardio')" aria-expanded="false" aria-controls="panel-cardio">
+        <div class="cat-top-row">
+          <div class="cat-art">
+            <svg viewBox="0 0 24 24" fill="none" stroke="var(--terra)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78L12 21.23l8.84-8.84a5.5 5.5 0 0 0 0-7.78Z"/>
+            </svg>
+          </div>
+          <div class="cat-chevron-wrap">▾</div>
+        </div>
+        <h3>Кардио и тренировки</h3>
+        <p class="cat-meta">2 инструмента</p>
+        <div class="cat-preview">
+          <span class="cat-preview-tag">❤️ Пульс</span>
+          <span class="cat-preview-tag">🫁 HRmax</span>
+        </div>
+      </button>
+
+      <button class="cat-card hero reveal d7" style="--cat-accent:var(--gold);--cat-soft:var(--gold-soft);" onclick="toggle('pro')" aria-expanded="false" aria-controls="panel-pro">
+        <div class="cat-art">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;">
+            <div><h3>PRO — Инструменты FPA <span class="pro-badge">PRO</span></h3><p class="cat-meta">10 инструментов</p></div>
+            <div class="cat-chevron-wrap">▾</div>
+          </div>
+          <div class="cat-preview">
+            <span class="cat-preview-tag">❤️ Карвонен</span>
+            <span class="cat-preview-tag">🫀 Руфье</span>
+            <span class="cat-preview-tag">🧬 Биовозраст</span>
+            <span class="cat-preview-tag">📉 Дефицит</span>
+          </div>
+        </div>
+      </button>
+    </div>
+
+    <div class="cat-panel" id="panel-food" role="region" aria-label="Питание и калории">
+      <div class="panel-head">🍎 Питание и калории</div>
+      <a href="calories.html" class="panel-link"><span class="pl-icon">🔥</span><span class="pl-body"><span class="pl-name">Калькулятор калорий</span><span class="pl-hint">Суточная норма TDEE</span></span><span class="pl-arrow">→</span></a>
+      <a href="water.html" class="panel-link"><span class="pl-icon">💧</span><span class="pl-body"><span class="pl-name">Норма воды в день</span><span class="pl-hint">Суточная потребность в жидкости</span></span><span class="pl-arrow">→</span></a>
+      <a href="bju.html" class="panel-link"><span class="pl-icon">🥗</span><span class="pl-body"><span class="pl-name">БЖУ калькулятор</span><span class="pl-hint">Белки, жиры, углеводы по цели</span></span><span class="pl-arrow">→</span></a>
+      <a href="bmr.html" class="panel-link"><span class="pl-icon">⚡</span><span class="pl-body"><span class="pl-name">Базальный метаболизм (BMR)</span><span class="pl-hint">Основной обмен по трём формулам</span></span><span class="pl-arrow">→</span></a>
+      <a href="deficit.html" class="panel-link"><span class="pl-icon">📅</span><span class="pl-body"><span class="pl-name">Дефицит калорий</span><span class="pl-hint">Планирование и прогноз похудения</span></span><span class="pl-arrow">→</span></a>
+    </div>
+
+    <div class="cat-panel" id="panel-anthro" role="region" aria-label="Антропометрия и состав тела">
+      <div class="panel-head">📐 Антропометрия и состав тела</div>
+      <a href="anthro.html" class="panel-link"><span class="pl-icon">📐</span><span class="pl-body"><span class="pl-name">Антропометрия</span><span class="pl-hint">Идеальные пропорции по росту</span></span><span class="pl-arrow">→</span></a>
+      <a href="imt.html" class="panel-link"><span class="pl-icon">📊</span><span class="pl-body"><span class="pl-name">Индекс массы тела (ИМТ)</span><span class="pl-hint">Оценка соответствия роста и веса</span></span><span class="pl-arrow">→</span></a>
+      <a href="bodyfat.html" class="panel-link"><span class="pl-icon">💪</span><span class="pl-body"><span class="pl-name">Процент жира в теле</span><span class="pl-hint">Формула ВМС США по замерам</span></span><span class="pl-arrow">→</span></a>
+      <a href="whr.html" class="panel-link"><span class="pl-icon">⚖️</span><span class="pl-body"><span class="pl-name">Талия к бёдрам (WHR)</span><span class="pl-hint">Риск висцерального ожирения</span></span><span class="pl-arrow">→</span></a>
+      <a href="ideal_weight.html" class="panel-link"><span class="pl-icon">🎯</span><span class="pl-body"><span class="pl-name">Идеальный вес</span><span class="pl-hint">Четыре научные формулы</span></span><span class="pl-arrow">→</span></a>
+      <a href="leanbody.html" class="panel-link"><span class="pl-icon">🦴</span><span class="pl-body"><span class="pl-name">Сухая масса тела (LBM)</span><span class="pl-hint">Масса тела без жировой ткани</span></span><span class="pl-arrow">→</span></a>
+    </div>
+
+    <div class="cat-panel" id="panel-cardio" role="region" aria-label="Кардио и тренировки">
+      <div class="panel-head">❤️ Кардио и тренировки</div>
+      <a href="pulse.html" class="panel-link"><span class="pl-icon">❤️</span><span class="pl-body"><span class="pl-name">Целевая зона пульса</span><span class="pl-hint">Зоны интенсивности тренировок</span></span><span class="pl-arrow">→</span></a>
+      <a href="maxpulse.html" class="panel-link"><span class="pl-icon">🫁</span><span class="pl-body"><span class="pl-name">Максимальный пульс (HRmax)</span><span class="pl-hint">По пяти формулам с учётом пола</span></span><span class="pl-arrow">→</span></a>
+    </div>
+
+    <div class="cat-panel" id="panel-pro" role="region" aria-label="PRO — Академические инструменты FPA">
+      <div class="panel-head">⭐ PRO — Академические инструменты FPA</div>
+      <a href="pro_karvonen.html" class="panel-link pro-link"><span class="pl-icon">❤️</span><span class="pl-body"><span class="pl-name">Метод Карвонена <span class="pro-badge">PRO</span></span><span class="pl-hint">Точный расчёт тренировочного пульса</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_rufye.html" class="panel-link pro-link"><span class="pl-icon">🫀</span><span class="pl-body"><span class="pl-name">Тест Руфье <span class="pro-badge">PRO</span></span><span class="pl-hint">Оценка работоспособности сердца</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_ortostatic.html" class="panel-link pro-link"><span class="pl-icon">🧍</span><span class="pl-body"><span class="pl-name">Ортостатическая проба <span class="pro-badge">PRO</span></span><span class="pl-hint">Оценка восстановления нервной системы</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_martine.html" class="panel-link pro-link"><span class="pl-icon">🏃</span><span class="pl-body"><span class="pl-name">Проба Мартинэ <span class="pro-badge">PRO</span></span><span class="pl-hint">Реакция ССС на стандартную нагрузку</span></span><span class="pl-arrow">→</span></a>
+      <a href="bmr.html#pro" class="panel-link pro-link"><span class="pl-icon">⚡</span><span class="pl-body"><span class="pl-name">Миффлин-Джеор PRO <span class="pro-badge">PRO</span></span><span class="pl-hint">TDEE + все сценарии</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_bju_pro.html" class="panel-link pro-link"><span class="pl-icon">🥩</span><span class="pl-body"><span class="pl-name">Нормы БЖУ по целям <span class="pro-badge">PRO</span></span><span class="pl-hint">Академический расчёт по учебнику FPA</span></span><span class="pl-arrow">→</span></a>
+      <a href="whr.html#pro" class="panel-link pro-link"><span class="pl-icon">📏</span><span class="pl-body"><span class="pl-name">Талия / Бёдра PRO <span class="pro-badge">PRO</span></span><span class="pl-hint">Висцеральное ожирение</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_weight_loss.html" class="panel-link pro-link"><span class="pl-icon">📉</span><span class="pl-body"><span class="pl-name">Безопасный дефицит <span class="pro-badge">PRO</span></span><span class="pl-hint">Скорость снижения веса без потери мышц</span></span><span class="pl-arrow">→</span></a>
+      <a href="pro_zones5.html" class="panel-link pro-link"><span class="pl-icon">🔥</span><span class="pl-body"><span class="pl-name">5 зон пульса Карвонена <span class="pro-badge">PRO</span></span><span class="pl-hint">Расширенные зоны интенсивности</span></span><span class="pl-arrow">→</span></a>
+      <a href="bio_age.html" class="panel-link pro-link"><span class="pl-icon">🧬</span><span class="pl-body"><span class="pl-name">Биологический возраст <span class="pro-badge">PRO</span></span><span class="pl-hint">Реальный возраст организма по 4 показателям</span></span><span class="pl-arrow">→</span></a>
+    </div>
+
+    <div class="deco-divider reveal d8">
+      <span class="deco-dots"><span class="deco-dot"></span><span class="deco-dot"></span><span class="deco-dot"></span></span>
+    </div>
+
+    <footer class="reveal d8">
+      <p class="footer-sig">Дорохин А.О.</p>
+      <p>© 2026 · Все права защищены</p>
+      <p>Перед использованием проконсультируйтесь со специалистом</p>
+      <p style="margin-top:6px;"><a href="methods.html">📖 Методология расчётов</a></p>
+    </footer>
+  </main>
+
+  <div class="modal-backdrop" id="resetModal" onclick="closeModal(event)">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="reset-modal-title">
+      <span class="modal-icon">🗑️</span>
+      <p class="modal-title" id="reset-modal-title">Сбросить всё?</p>
+      <p class="modal-sub">Все сохранённые измерения и параметры будут удалены. Это действие нельзя отменить.</p>
+      <div class="modal-btns">
+        <button class="modal-btn-cancel" onclick="closeResetModal()">Отмена</button>
+        <button class="modal-btn-confirm" onclick="confirmReset()">Сбросить</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+  <script>
+    const PANELS = ['food','anthro','cardio','pro'];
+    const CARDS = document.querySelectorAll('.cat-card');
+
+    function toggle(id) {
+      const panel = document.getElementById('panel-' + id);
+      const isOpen = panel.classList.contains('open');
+      // Close all panels
+      PANELS.forEach(p => {
+        document.getElementById('panel-' + p).classList.remove('open');
+      });
+      // Reset all cards
+      CARDS.forEach(c => {
+        c.classList.remove('active');
+        c.setAttribute('aria-expanded', 'false');
+      });
+      if (!isOpen) {
+        panel.classList.add('open');
+        const idx = PANELS.indexOf(id);
+        if (CARDS[idx]) {
+          CARDS[idx].classList.add('active');
+          CARDS[idx].setAttribute('aria-expanded', 'true');
+        }
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+      }
+    }
+
+    // Reset modal with focus trap
+    function openResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      trapFocus(modal);
+      modal.querySelector('.modal-btn-cancel').focus();
+    }
+    function closeResetModal() {
+      const modal = document.getElementById('resetModal');
+      modal.classList.remove('open');
+      document.body.style.overflow = '';
+      releaseFocus();
+      document.getElementById('forget-all-btn').focus();
+    }
+    function closeModal(e) { if (e.target === document.getElementById('resetModal')) closeResetModal(); }
+    function confirmReset() {
+      if (window.HealthStorage) { window.HealthStorage.clearAllData(); }
+      else { Object.keys(localStorage).filter(k => k.startsWith('fz_')).forEach(k => localStorage.removeItem(k)); }
+      closeResetModal();
+      const btn = document.getElementById('forget-all-btn');
+      btn.textContent = '✓ Готово';
+      setTimeout(() => { btn.textContent = 'Сбросить данные'; }, 2000);
+    }
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeResetModal(); });
+
+    // Focus trap utility
+    let _focusTrapHandler = null;
+    function trapFocus(container) {
+      releaseFocus();
+      _focusTrapHandler = function(e) {
+        if (e.key !== 'Tab') return;
+        const focusable = container.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (e.shiftKey) {
+          if (document.activeElement === first) { e.preventDefault(); last.focus(); }
+        } else {
+          if (document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      };
+      document.addEventListener('keydown', _focusTrapHandler);
+    }
+    function releaseFocus() {
+      if (_focusTrapHandler) {
+        document.removeEventListener('keydown', _focusTrapHandler);
+        _focusTrapHandler = null;
+      }
+    }
+
+    if (typeof renderHistory === 'function') {
+      if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', () => renderHistory('history-block'));
+      else renderHistory('history-block');
+    }
+
+  </script>
+</body>
+</html>

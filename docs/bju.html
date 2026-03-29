@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>БЖУ калькулятор — Формулы здоровья</title>
+  <meta name="description" content="Калькулятор БЖУ — рассчитайте нормы белков, жиров и углеводов под вашу цель: похудение, поддержание или набор массы.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .macro-row{margin-bottom:12px;}
+    .macro-label{display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;color:var(--text-mid);}
+    .macro-name{font-weight:600;}
+    .macro-bar{height:6px;border-radius:3px;overflow:hidden;background:rgba(0,0,0,0.03);}
+    .macro-fill{height:100%;border-radius:3px;transition:width .5s ease;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="БЖУ калькулятор — Формулы здоровья">
+  <meta property="og:description" content="Калькулятор БЖУ — рассчитайте нормы белков, жиров и углеводов под вашу цель: похудение, поддержание или набор массы.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/bju.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="БЖУ калькулятор — Формулы здоровья">
+  <meta name="twitter:description" content="Калькулятор БЖУ — рассчитайте нормы белков, жиров и углеводов под вашу цель: похудение, поддержание или набор массы.">
+
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🥗</span> БЖУ калькулятор</h1>
+      <p>Расчёт белков, жиров и углеводов под вашу цель</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>БЖУ калькулятор</span></nav>
+    <fieldset><legend>Пол</legend>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="gender" value="male" checked> Мужской</label>
+      <label class="radio-option"><input type="radio" name="gender" value="female"> Женский</label>
+    </div>
+    </fieldset>
+    <div class="form-group"><label for="age">Возраст (лет)</label><input type="number" id="age" placeholder="25" min="10" max="100"></div>
+    <div class="form-group"><label for="height">Рост (см)</label><input type="number" id="height" placeholder="175" min="100" max="250"></div>
+    <div class="form-group"><label for="weight">Вес (кг)</label><input type="number" id="weight" placeholder="70" min="30" max="300"></div>
+    <div class="form-group">
+      <label>Уровень активности</label>
+      <select id="activity">
+        <option value="1.2">Сидячий — без спорта</option>
+        <option value="1.375">Лёгкая — 1–3 раза/нед</option>
+        <option value="1.55" selected>Умеренная — 3–5 раз/нед</option>
+        <option value="1.725">Высокая — 6–7 раз/нед</option>
+        <option value="1.9">Экстремальная</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label>Цель</label>
+      <select id="goal">
+        <option value="maintain">Поддержание веса</option>
+        <option value="lose">Похудение</option>
+        <option value="gain">Набор массы</option>
+      </select>
+    </div>
+    <button class="btn-calculate btn-calc-orange" onclick="calc()">Рассчитать БЖУ</button>
+    <div id="result">
+      <p class="result-title">Норма макронутриентов</p>
+      <div class="results-grid" style="grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">
+        <div class="result-card"><h4>Калории</h4><span class="result-value" id="rKcal">—</span></div>
+        <div class="result-card"><h4>Белки</h4><span class="result-value" id="rP" style="color:#3d8fd4">—</span><span class="unit">г</span></div>
+        <div class="result-card"><h4>Жиры</h4><span class="result-value" id="rF" style="color:#d48a1a">—</span><span class="unit">г</span></div>
+        <div class="result-card"><h4>Углеводы</h4><span class="result-value" id="rC" style="color:var(--green)">—</span><span class="unit">г</span></div>
+      </div>
+      <div id="bars"></div>
+      <p style="text-align:center;margin-top:10px;font-size:11px;color:var(--text-muted)">1г белка = 4 ккал · 1г жира = 9 ккал · 1г углеводов = 4 ккал</p>
+    
+      <button class="share-btn" id="share-btn" onclick="shareResult()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+    </div>
+    
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#bju" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Нормы БЖУ →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="calories.html" class="related-card"><span class="related-card-icon">🔥</span><span class="related-card-name">Калькулятор калорий</span><span class="related-card-hint">Суточная норма TDEE</span></a>
+        <a href="deficit.html" class="related-card"><span class="related-card-icon">📅</span><span class="related-card-name">Дефицит калорий</span><span class="related-card-hint">Планирование похудения</span></a>
+        <a href="pro_bju_pro.html" class="related-card"><span class="related-card-icon">🥩</span><span class="related-card-name">Нормы БЖУ PRO</span><span class="related-card-hint">Академический расчёт FPA</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'bju';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p></footer>
+  </div></main>
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+<script>
+  // ── Inline validation helper ──
+  function showErr(fieldId, msg) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    let err = el.parentNode.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error';
+      el.parentNode.appendChild(err);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    el.style.borderColor = 'rgba(255,107,107,0.7)';
+    el.addEventListener('input', function clear() {
+      err.classList.remove('visible');
+      el.style.borderColor = '';
+      el.removeEventListener('input', clear);
+    }, { once: true });
+  }
+  function showFormErr(msg) {
+    // Show error near the calculate button
+    const btn = document.querySelector('.btn-calculate');
+    if (!btn) return;
+    let err = btn.parentNode.querySelector('.form-level-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error form-level-error';
+      err.style.marginBottom = '8px';
+      btn.parentNode.insertBefore(err, btn);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    setTimeout(() => err.classList.remove('visible'), 4000);
+  }
+</script>
+  <script>
+    const GOALS={
+      maintain:{kcalMod:1.00,p:.30,f:.30,c:.40},
+      lose:    {kcalMod:0.80,p:.40,f:.30,c:.30},
+      gain:    {kcalMod:1.15,p:.30,f:.20,c:.50},
+    };
+    function calc(){
+      const g=document.querySelector('input[name="gender"]:checked').value;
+      const age=+document.getElementById('age').value;
+      const h=+document.getElementById('height').value;
+      const w=+document.getElementById('weight').value;
+      const act=+document.getElementById('activity').value;
+      const goal=document.getElementById('goal').value;
+      if(!age){showErr('age','Введите возраст');return;}if(!h){showErr('height','Введите рост');return;}if(!w){showErr('weight','Введите вес');return;}
+      const bmr=g==='male'?10*w+6.25*h-5*age+5:10*w+6.25*h-5*age-161;
+      const G=GOALS[goal];
+      const kcal=Math.round(bmr*act*G.kcalMod);
+      const pG=Math.round(kcal*G.p/4),fG=Math.round(kcal*G.f/9),cG=Math.round(kcal*G.c/4);
+      document.getElementById('rKcal').textContent=kcal;
+      document.getElementById('rP').textContent=pG;
+      document.getElementById('rF').textContent=fG;
+      document.getElementById('rC').textContent=cG;
+      document.getElementById('bars').innerHTML=`
+        <div class="macro-row">
+          <div class="macro-label"><span class="macro-name" style="color:#3d8fd4">Белки</span><span>${pG}г · ${Math.round(pG*4)} ккал · ${Math.round(G.p*100)}%</span></div>
+          <div class="macro-bar"><div class="macro-fill" style="width:${G.p*100}%;background:#3d8fd4"></div></div>
+        </div>
+        <div class="macro-row">
+          <div class="macro-label"><span class="macro-name" style="color:#d48a1a">Жиры</span><span>${fG}г · ${Math.round(fG*9)} ккал · ${Math.round(G.f*100)}%</span></div>
+          <div class="macro-bar"><div class="macro-fill" style="width:${G.f*100}%;background:#d48a1a"></div></div>
+        </div>
+        <div class="macro-row">
+          <div class="macro-label"><span class="macro-name" style="color:var(--green)">Углеводы</span><span>${cG}г · ${Math.round(cG*4)} ккал · ${Math.round(G.c*100)}%</span></div>
+          <div class="macro-bar"><div class="macro-fill" style="width:${G.c*100}%;background:#29a86a"></div></div>
+        </div>`;
+      document.getElementById('result').style.display='block';
+      if(window.HistoryModule){HistoryModule.saveToHistory({calc:'bju',label:'БЖУ калькулятор',result:kcal+' ккал',date:HistoryModule.formatDate(),href:'bju.html',params:{age,height:h,weight:w}});
+      if(window.App)App.saveCalc('bju',{age,height:h,weight:w},kcal+' ккал','БЖУ калькулятор');}
+    document.getElementById('share-btn').style.display='inline-flex';;
+      document.getElementById('save-history-btn').style.display='flex';
+    }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

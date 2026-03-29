@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>404 — Страница не найдена · Формулы здоровья</title>
+  <meta name="description" content="Страница не найдена. Вернитесь на главную и воспользуйтесь калькуляторами.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .err-wrap {
+      text-align: center;
+      padding: 20px 0 32px;
+    }
+    .err-code {
+      font-size: clamp(80px, 20vw, 140px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -4px;
+      background: linear-gradient(135deg, #c9a84c 0%, #a06bc8 60%, #3d8fd4 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+      animation: popIn .5s cubic-bezier(.36,1.56,.64,1) both;
+    }
+    @keyframes popIn {
+      from { opacity:0; transform:scale(.8) translateY(-10px); }
+      to   { opacity:1; transform:scale(1) translateY(0); }
+    }
+    .err-title {
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .err-sub {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 28px;
+    }
+    .btn-home {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 28px;
+      border-radius: var(--radius-sm);
+      background: var(--accent);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      font-family: var(--font);
+      text-decoration: none;
+      transition: all var(--transition);
+      margin-bottom: 40px;
+    }
+    .btn-home:hover { filter: brightness(1.1); transform: translateY(-2px); }
+
+    .suggest-title {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+      display: flex; align-items: center; gap: 12px;
+    }
+    .suggest-title::before,
+    .suggest-title::after {
+      content: ''; flex: 1; height: 1px;
+      background: var(--border);
+    }
+    .suggest-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 8px;
+    }
+    .suggest-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-decoration: none;
+      color: var(--text-mid);
+      transition: all var(--transition);
+      text-align: left;
+    }
+    .suggest-card:hover {
+      background: var(--bg-card-h);
+      border-color: var(--border-h);
+      transform: translateY(-2px);
+      color: var(--text);
+    }
+    .suggest-card::after {
+      content: '';
+      display: block;
+      height: 2px;
+      border-radius: 2px;
+      margin-top: 10px;
+      background: var(--sc-color, var(--accent));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .suggest-card:hover::after { opacity: 1; }
+    .sc-icon { font-size: 20px; margin-bottom: 8px; display: block; }
+    .sc-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+    .sc-hint { font-size: 11px; color: var(--text-muted); }
+  </style>
+  <meta property="og:title" content="404 — Страница не найдена · Формулы здоровья">
+  <meta property="og:description" content="Страница не найдена. Вернитесь на главную и воспользуйтесь калькуляторами.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/404.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <div class="err-wrap">
+      <div class="err-code">404</div>
+      <p class="err-title">Страница не найдена</p>
+      <p class="err-sub">Возможно, вы ищете один из наших калькуляторов</p>
+      <a href="index.html" class="btn-home">← На главную</a>
+
+      <p class="suggest-title">Популярные калькуляторы</p>
+      <div class="suggest-grid">
+        <a href="calories.html" class="suggest-card" style="--sc-color:var(--green);">
+          <span class="sc-icon"><span aria-hidden="true">🔥</span></span>
+          <span class="sc-name">Калькулятор калорий</span>
+          <span class="sc-hint">Суточная норма TDEE</span>
+        </a>
+        <a href="imt.html" class="suggest-card" style="--sc-color:#c94b3b;">
+          <span class="sc-icon"><span aria-hidden="true">📊</span></span>
+          <span class="sc-name">Индекс массы тела</span>
+          <span class="sc-hint">Оценка по формуле ВОЗ</span>
+        </a>
+        <a href="bodyfat.html" class="suggest-card" style="--sc-color:#1aaa91;">
+          <span class="sc-icon"><span aria-hidden="true">💪</span></span>
+          <span class="sc-name">Процент жира</span>
+          <span class="sc-hint">Формула ВМС США</span>
+        </a>
+        <a href="bju.html" class="suggest-card" style="--sc-color:#d48a1a;">
+          <span class="sc-icon"><span aria-hidden="true">🥗</span></span>
+          <span class="sc-name">БЖУ калькулятор</span>
+          <span class="sc-hint">Белки, жиры, углеводы</span>
+        </a>
+        <a href="nutrition_ai.html" class="suggest-card" style="--sc-color:#3d8fd4;">
+          <span class="sc-icon"><span aria-hidden="true">🧠</span></span>
+          <span class="sc-name">AI-разбор питания</span>
+          <span class="sc-hint">12 вопросов → план</span>
+        </a>
+        <a href="pro_karvonen.html" class="suggest-card" style="--sc-color:#c9a84c;">
+          <span class="sc-icon"><span aria-hidden="true">❤️</span></span>
+          <span class="sc-name">Метод Карвонена</span>
+          <span class="sc-hint">Точный пульс для тренировок</span>
+        </a>
+      </div>
+    </div>
+
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О. Все права защищены.</p></footer>
+  </div></main>
+  <script src="/app.js"></script>
+</body>
+</html>

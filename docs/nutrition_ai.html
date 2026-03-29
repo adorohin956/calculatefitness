@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>AI-разбор питания — Формулы здоровья</title>
+  <meta name="description" content="AI-разбор питания от тренера Дорохина А.О. Пройдите 12-шаговый тест и получите персональный анализ рациона на основе методологии FPA.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── QUIZ SHELL ── */
+    .quiz-wrap { position: relative; }
+
+    /* Progress bar */
+    .progress-track {
+      height: 2px; background: var(--border);
+      border-radius: 2px; margin-bottom: 36px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--accent);
+      border-radius: 2px;
+      transition: width 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    .progress-label {
+      font-family: var(--font-mono); font-size: 10px;
+      color: var(--text-muted); letter-spacing: 1.5px;
+      margin-bottom: 8px; display: block;
+    }
+
+    /* Step */
+    .step { display: none; animation: stepIn .3s ease both; }
+    .step.active { display: block; }
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateX(14px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .step-q {
+      font-size: clamp(16px, 3vw, 21px);
+      font-weight: 500; color: var(--text);
+      line-height: 1.35; margin-bottom: 6px;
+    }
+    .step-hint {
+      font-size: 12.5px; color: var(--text-muted);
+      margin-bottom: 24px; line-height: 1.5;
+    }
+
+    /* Choice buttons */
+    .choices { display: flex; flex-direction: column; gap: 8px; margin-bottom: 28px; }
+    .choice {
+      display: flex; align-items: center; gap: 12px;
+      padding: 13px 16px; border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer; font-size: 13.5px; color: var(--text-mid);
+      transition: all var(--transition); user-select: none;
+      text-align: left;
+    }
+    .choice:hover { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+    .choice.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+    .choice.selected .choice-check { background: var(--accent); border-color: var(--accent); }
+    .choice-check {
+      width: 18px; height: 18px; border-radius: 50%;
+      border: 1px solid var(--border); flex-shrink: 0;
+      transition: all var(--transition);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .choice-check svg { display: none; }
+    .choice.selected .choice-check svg { display: block; }
+
+    /* Multi-select tag style */
+    .tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 28px; }
+    .tag {
+      padding: 8px 16px; border-radius: 50px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      cursor: pointer; font-size: 12.5px; color: var(--text-mid);
+      transition: all var(--transition); user-select: none;
+    }
+    .tag:hover { border-color: var(--accent); color: var(--text); }
+    .tag.selected { border-color: var(--accent); background: var(--accent-dim); color: var(--text); }
+
+    /* Text input */
+    textarea {
+      width: 100%; min-height: 90px; resize: vertical;
+      padding: 12px 14px; border: 1px solid var(--border);
+      border-radius: var(--radius-sm); font-size: 13.5px;
+      font-family: var(--font); background: var(--bg);
+      color: var(--text); line-height: 1.6;
+      transition: border-color var(--transition), box-shadow var(--transition);
+      margin-bottom: 24px;
+    }
+    textarea::placeholder { color: var(--text-muted); opacity: 0.5; }
+    textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,124,107,0.15); outline: none; }
+
+    /* Nav buttons */
+    .step-nav { display: flex; gap: 10px; align-items: center; }
+    .btn-next {
+      padding: 12px 28px; border-radius: var(--radius-sm);
+      background: var(--accent); color: var(--text);
+      border: none; font-size: 13.5px; font-weight: 600;
+      font-family: var(--font); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-next:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .btn-next:disabled { opacity: 0.35; cursor: not-allowed; transform: none; filter: none; }
+    .btn-back {
+      padding: 12px 20px; border-radius: var(--radius-sm);
+      background: transparent; color: var(--text-muted);
+      border: 1px solid var(--border); font-size: 13px;
+      font-family: var(--font); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-back:hover { color: var(--text); border-color: var(--border-h); }
+
+    /* ── API KEY BLOCK ── */
+    .key-block {
+      background: rgba(74,124,107,0.06);
+      border: 1px solid rgba(74,124,107,0.2);
+      border-radius: var(--radius-md);
+      padding: 18px 20px; margin-bottom: 28px;
+    }
+    .key-block-title {
+      font-size: 12px; font-weight: 600;
+      color: rgba(74,124,107,0.85); margin-bottom: 6px;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .key-block p { font-size: 12px; color: var(--text-muted); margin-bottom: 12px; line-height: 1.6; }
+    .key-block a { color: rgba(74,124,107,0.8); }
+    .key-input-row { display: flex; gap: 8px; }
+    .key-input-row input[type="password"],
+    .key-input-row input[type="text"] {
+      flex: 1; padding: 10px 13px; font-size: 13px;
+      border: 1px solid var(--border); border-radius: var(--radius-sm);
+      background: var(--bg); color: var(--text);
+      font-family: var(--font-mono);
+    }
+    .key-input-row input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px rgba(74,124,107,0.15); }
+    .btn-save-key {
+      padding: 10px 18px; border-radius: var(--radius-sm);
+      background: rgba(74,124,107,0.25); color: rgba(74,124,107,0.9);
+      border: 1px solid rgba(74,124,107,0.3); font-size: 12.5px;
+      font-weight: 600; font-family: var(--font); cursor: pointer;
+      white-space: nowrap; transition: all var(--transition);
+    }
+    .btn-save-key:hover { background: rgba(74,124,107,0.35); }
+    .key-status { font-size: 11.5px; margin-top: 8px; }
+    .key-status.ok  { color: #29a86a; }
+    .key-status.err { color: #c94b3b; }
+
+    /* ── LOADER ── */
+    #loader { display: none; text-align: center; padding: 40px 0; }
+    .loader-ring {
+      width: 48px; height: 48px; margin: 0 auto 20px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.9s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loader-text { font-size: 13px; color: var(--text-muted); }
+    .loader-dots::after {
+      content: '';
+      animation: dots 1.5s steps(4,end) infinite;
+    }
+    @keyframes dots { 0%{content:''} 25%{content:'.'} 50%{content:'..'} 75%{content:'...'} }
+
+    /* ── RESULT ── */
+    #result-block { display: none; animation: fadeUp .4s ease both; }
+
+    .result-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 24px; padding-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .result-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: var(--accent-dim); border: 1px solid rgba(74,124,107,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .result-meta { flex: 1; }
+    .result-meta strong { display: block; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+    .result-meta span { font-size: 11.5px; color: var(--text-muted); }
+
+    .result-body {
+      font-size: 14px; color: var(--text-mid);
+      line-height: 1.8; white-space: pre-wrap;
+    }
+    /* Styled markdown from AI */
+    .result-body h3 {
+      font-size: 13px; font-weight: 600;
+      color: var(--accent); margin: 22px 0 10px;
+      text-transform: uppercase; letter-spacing: 1.2px;
+    }
+    .result-body strong { color: var(--text); font-weight: 600; }
+    .result-body ul { padding-left: 18px; }
+    .result-body li { margin-bottom: 6px; }
+
+    .disclaimer {
+      margin-top: 24px; padding: 14px 16px;
+      background: rgba(212,138,26,0.07);
+      border: 1px solid rgba(212,138,26,0.2);
+      border-radius: var(--radius-sm);
+      font-size: 11.5px; color: rgba(212,138,26,0.75);
+      line-height: 1.65;
+    }
+
+    .btn-restart {
+      margin-top: 20px; padding: 12px 24px;
+      border-radius: var(--radius-sm); border: 1px solid var(--border);
+      background: transparent; color: var(--text-muted);
+      font-size: 13px; font-family: var(--font); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .btn-restart:hover { color: var(--text); border-color: var(--border-h); }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="AI-разбор питания — Формулы здоровья">
+  <meta property="og:description" content="AI-разбор питания от тренера Дорохина А.О. Пройдите 12-шаговый тест и получите персональный анализ рациона на основе методологии FPA.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/nutrition_ai.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI-разбор питания — Формулы здоровья">
+  <meta name="twitter:description" content="AI-разбор питания от тренера Дорохина А.О. Пройдите 12-шаговый тест и получите персональный анализ рациона на основе методологии FPA.">
+
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🧠</span> AI-разбор питания</h1>
+      <p>12 вопросов → персональный анализ рациона и план питания</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>AI-анализ питания</span></nav>
+
+
+    <!-- QUIZ -->
+    <div class="quiz-wrap" id="quizWrap">
+      <span class="progress-label" id="progressLabel">Шаг 1 из 12</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:8%"></div></div>
+
+      <!-- STEP 1: Цель -->
+      <div class="step active" data-step="1">
+        <p class="step-q">Какая у тебя главная цель?</p>
+        <p class="step-hint">Это определит всю структуру рекомендаций</p>
+        <div class="choices" data-key="goal" data-type="single">
+          <div class="choice" data-val="lose_weight">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Похудение — сбросить лишний вес
+          </div>
+          <div class="choice" data-val="gain_muscle">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Набор мышечной массы
+          </div>
+          <div class="choice" data-val="maintain">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Поддержание и улучшение здоровья
+          </div>
+          <div class="choice" data-val="energy">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Больше энергии и продуктивности
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-next" onclick="next(1)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 2: Пол, возраст, вес, рост -->
+      <div class="step" data-step="2">
+        <p class="step-q">Базовые данные</p>
+        <p class="step-hint">Используются для точного расчёта КБЖУ</p>
+        <fieldset><legend>Пол</legend>
+        <div class="radio-group" style="margin-bottom:16px;">
+          <label class="radio-option"><input type="radio" name="sex" value="male" checked> Мужской</label>
+          <label class="radio-option"><input type="radio" name="sex" value="female"> Женский</label>
+        </div></fieldset>
+        <div class="form-group"><label for="q_age">Возраст (лет)</label><input type="number" id="q_age" placeholder="25" min="14" max="90"></div>
+        <div class="form-group"><label for="q_height">Рост (см)</label><input type="number" id="q_height" placeholder="175" min="140" max="220"></div>
+        <div class="form-group"><label for="q_weight">Вес (кг)</label><input type="number" id="q_weight" placeholder="70" min="40" max="200"></div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(2)">← Назад</button>
+          <button class="btn-next" onclick="next(2)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 3: Активность -->
+      <div class="step" data-step="3">
+        <p class="step-q">Уровень физической активности</p>
+        <p class="step-hint">Включая работу, ходьбу и тренировки</p>
+        <div class="choices" data-key="activity" data-type="single">
+          <div class="choice" data-val="sedentary">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Сидячая работа, почти без движения
+          </div>
+          <div class="choice" data-val="light">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Лёгкая активность — 1–3 тренировки в неделю
+          </div>
+          <div class="choice" data-val="moderate">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Умеренная — 3–5 тренировок в неделю
+          </div>
+          <div class="choice" data-val="high">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Высокая — ежедневные тренировки или физический труд
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(3)">← Назад</button>
+          <button class="btn-next" onclick="next(3)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 4: Завтрак -->
+      <div class="step" data-step="4">
+        <p class="step-q">Опиши свой типичный завтрак</p>
+        <p class="step-hint">Что обычно ешь? Пиши как есть, можно кратко. Если пропускаешь — так и напиши.</p>
+        <textarea id="q_breakfast" placeholder="Например: овсянка на воде, кофе с молоком. Или: ничего, пью только кофе..."></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(4)">← Назад</button>
+          <button class="btn-next" onclick="next(4)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 5: Обед -->
+      <div class="step" data-step="5">
+        <p class="step-q">Типичный обед</p>
+        <p class="step-hint">Что обычно ешь в обед? Дома, в кафе, в офисе — без разницы</p>
+        <textarea id="q_lunch" placeholder="Например: бизнес-ланч в кафе — суп и второе. Или: перекусываю печеньем и кофе на работе..."></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(5)">← Назад</button>
+          <button class="btn-next" onclick="next(5)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 6: Ужин -->
+      <div class="step" data-step="6">
+        <p class="step-q">Типичный ужин</p>
+        <p class="step-hint">И что обычно пьёшь в течение дня?</p>
+        <textarea id="q_dinner" placeholder="Например: жареная картошка с мясом, чай с сахаром. Воды пью мало, в основном чай и кофе..."></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(6)">← Назад</button>
+          <button class="btn-next" onclick="next(6)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 7: Перекусы -->
+      <div class="step" data-step="7">
+        <p class="step-q">Перекусы и сладкое</p>
+        <p class="step-hint">Что ешь между основными приёмами пищи? Шоколадки, фрукты, орехи, чипсы?</p>
+        <textarea id="q_snacks" placeholder="Например: шоколадка после обеда, печенье к чаю. Или: стараюсь не перекусывать, но иногда срываюсь..."></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(7)">← Назад</button>
+          <button class="btn-next" onclick="next(7)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 8: Режим сна и питания -->
+      <div class="step" data-step="8">
+        <p class="step-q">Режим дня</p>
+        <p class="step-hint">Это важно для нутритайминга — когда есть что</p>
+        <div class="form-group"><label>Во сколько обычно просыпаешься?</label>
+          <select id="q_wakeup">
+            <option value="5-6">5:00–6:00</option>
+            <option value="6-7">6:00–7:00</option>
+            <option value="7-8" selected>7:00–8:00</option>
+            <option value="8-9">8:00–9:00</option>
+            <option value="9-10">9:00–10:00</option>
+            <option value="10+">Позже 10:00</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Во сколько ложишься спать?</label>
+          <select id="q_sleep">
+            <option value="21-22">21:00–22:00</option>
+            <option value="22-23" selected>22:00–23:00</option>
+            <option value="23-0">23:00–00:00</option>
+            <option value="0-1">00:00–01:00</option>
+            <option value="1+">Позже 01:00</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Тренируешься? Если да — когда?</label>
+          <select id="q_training_time">
+            <option value="none">Не тренируюсь</option>
+            <option value="morning">Утром (до 10:00)</option>
+            <option value="midday">В обед (10:00–14:00)</option>
+            <option value="evening">Вечером (17:00–20:00)</option>
+            <option value="night">Ночью (после 20:00)</option>
+          </select>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(8)">← Назад</button>
+          <button class="btn-next" onclick="next(8)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 9: Ограничения -->
+      <div class="step" data-step="9">
+        <p class="step-q">Есть ли ограничения в питании?</p>
+        <p class="step-hint">Выбери всё что подходит</p>
+        <div class="tags" data-key="restrictions" data-type="multi">
+          <div class="tag" data-val="none">Нет ограничений</div>
+          <div class="tag" data-val="vegetarian">Вегетарианство</div>
+          <div class="tag" data-val="vegan">Веганство</div>
+          <div class="tag" data-val="no_gluten">Без глютена</div>
+          <div class="tag" data-val="no_lactose">Без лактозы</div>
+          <div class="tag" data-val="no_pork">Без свинины</div>
+          <div class="tag" data-val="allergies">Аллергии (укажи ниже)</div>
+        </div>
+        <textarea id="q_restrictions_text" placeholder="Если есть аллергии или что-то ещё — напиши здесь..." style="min-height:60px;"></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(9)">← Назад</button>
+          <button class="btn-next" onclick="next(9)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 10: Проблемы -->
+      <div class="step" data-step="10">
+        <p class="step-q">Что сам замечаешь в своём самочувствии?</p>
+        <p class="step-hint">Выбери всё что актуально — это поможет найти причины в питании</p>
+        <div class="tags" data-key="symptoms" data-type="multi">
+          <div class="tag" data-val="fatigue">Постоянная усталость</div>
+          <div class="tag" data-val="sugar_cravings">Тяга к сладкому</div>
+          <div class="tag" data-val="bloating">Вздутие живота</div>
+          <div class="tag" data-val="hunger">Постоянный голод</div>
+          <div class="tag" data-val="sleep_problems">Плохой сон</div>
+          <div class="tag" data-val="slow_progress">Нет прогресса в тренировках</div>
+          <div class="tag" data-val="mood_swings">Перепады настроения</div>
+          <div class="tag" data-val="brain_fog">Туман в голове, сложно концентрироваться</div>
+          <div class="tag" data-val="none">Всё в порядке</div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(10)">← Назад</button>
+          <button class="btn-next" onclick="next(10)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 11: Бюджет и готовность -->
+      <div class="step" data-step="11">
+        <p class="step-q">Как ты относишься к готовке?</p>
+        <p class="step-hint">Чтобы план был реалистичным, а не красивой бумажкой</p>
+        <div class="choices" data-key="cooking" data-type="single">
+          <div class="choice" data-val="hate">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Не готовлю совсем — ем готовое или заказываю
+          </div>
+          <div class="choice" data-val="minimal">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Минимально — могу сварить, разогреть
+          </div>
+          <div class="choice" data-val="normal">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Нормально готовлю, трачу 20–40 минут в день
+          </div>
+          <div class="choice" data-val="love">
+            <div class="choice-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4l2.5 2.5L9 1" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg></div>
+            Люблю готовить, готов тратить время
+          </div>
+        </div>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(11)">← Назад</button>
+          <button class="btn-next" onclick="next(11)">Далее →</button>
+        </div>
+      </div>
+
+      <!-- STEP 12: Главная проблема -->
+      <div class="step" data-step="12">
+        <p class="step-q">Что тебя больше всего беспокоит в питании прямо сейчас?</p>
+        <p class="step-hint">Напиши своими словами — это самый важный вопрос</p>
+        <textarea id="q_main_problem" placeholder="Например: не могу убрать живот хотя хожу в зал. Или: ем мало но вес не уходит. Или: постоянно срываюсь вечером..."></textarea>
+        <div class="step-nav">
+          <button class="btn-back" onclick="back(12)">← Назад</button>
+          <button class="btn-next" onclick="sendToAI()" id="btnSubmit">🧠 Получить разбор</button>
+        </div>
+      </div>
+    </div><!-- /quiz-wrap -->
+
+    <!-- LOADER -->
+    <div id="loader">
+      <div class="loader-ring"></div>
+      <p class="loader-text">Анализирую твой рацион<span class="loader-dots"></span></p>
+      <p class="loader-text" style="margin-top:6px;font-size:11px;opacity:.5;">Groq AI · обычно занимает 3–8 секунд</p>
+    </div>
+
+    <!-- RESULT -->
+    <div id="result-block">
+      <div class="result-header">
+        <div class="result-avatar">🧠</div>
+        <div class="result-meta">
+          <strong>AI-разбор питания</strong>
+          <span>На основе методики Дорохина А.О. · Подготовлено Groq AI</span>
+        </div>
+      </div>
+      <div class="result-body" id="resultBody"></div>
+      <button class="share-btn" id="share-btn" style="display:none;margin-top:14px;" onclick="copyAiResult()">📋 Скопировать результат</button>
+      <div class="disclaimer">
+        ⚠️ Этот разбор подготовлен искусственным интеллектом на основе методических рекомендаций тренера. Он носит ориентировочный характер и не заменяет персональную консультацию специалиста. Перед существенными изменениями в рационе проконсультируйтесь с врачом или нутрициологом.
+      </div>
+      <button class="btn-restart" onclick="restart()">↩ Пройти заново</button>
+    </div>
+
+    <!-- CUSTOM KEY BLOCK (below quiz) -->
+    <div id="customKeyBlock" style="margin-top:32px;padding-top:24px;border-top:1px solid var(--border);">
+      <p style="font-size:11px;font-weight:500;color:var(--text-muted);margin-bottom:10px;letter-spacing:0.3px;">Если запрос не обрабатывается — введи свой ключ</p>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input type="password" id="apiKeyInput" placeholder="gsk_... (твой Groq ключ)" style="flex:1;padding:9px 12px;font-size:12px;font-family:var(--font-mono);border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);">
+        <button class="btn-save-key" onclick="saveKey()" style="padding:9px 14px;font-size:12px;white-space:nowrap;">Сохранить</button>
+      </div>
+      <p class="key-status" id="keyStatus" style="margin-top:6px;font-size:11px;"></p>
+      <p style="margin-top:8px;font-size:11px;color:var(--text-muted);line-height:1.6;">Бесплатный ключ: <a href="https://console.groq.com/keys" target="_blank" style="color:rgba(74,124,107,0.7);">console.groq.com/keys</a></p>
+    </div>
+
+    
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="calories.html" class="related-card"><span class="related-card-icon">🔥</span><span class="related-card-name">Калькулятор калорий</span><span class="related-card-hint">Суточная норма</span></a>
+        <a href="bju.html" class="related-card"><span class="related-card-icon">🥗</span><span class="related-card-name">БЖУ калькулятор</span><span class="related-card-hint">Макронутриенты</span></a>
+        <a href="deficit.html" class="related-card"><span class="related-card-icon">📅</span><span class="related-card-name">Дефицит калорий</span><span class="related-card-hint">Планирование</span></a>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О. Все права защищены.</p></footer>
+  </div></main>
+
+  <script src="/app.js"></script>
+  <script>
+  // ── DATA STORE ──
+  const answers = {};
+  let currentStep = 1;
+  const TOTAL = 12;
+
+  // ── API KEY ──
+  const DEFAULT_KEY = ''; // Set via UI or localStorage
+
+  function getKey() {
+    try { return localStorage.getItem('groq_api_key') || DEFAULT_KEY; } catch(e) { return DEFAULT_KEY; }
+  }
+  function setKey(val) {
+    try { localStorage.setItem('groq_api_key', val); } catch(e) {}
+  }
+
+  function saveKey() {
+    const val = document.getElementById('apiKeyInput').value.trim();
+    if (!val.startsWith('gsk_') || val.length < 20) {
+      setKeyStatus('Ключ должен начинаться с gsk_ и быть длиннее 20 символов', 'err');
+      return;
+    }
+    setKey(val);
+    setKeyStatus('✓ Твой ключ сохранён и будет использоваться', 'ok');
+    document.getElementById('apiKeyInput').value = '●'.repeat(12) + val.slice(-4);
+  }
+  function setKeyStatus(msg, cls) {
+    const el = document.getElementById('keyStatus');
+    el.textContent = msg; el.className = 'key-status ' + cls;
+  }
+
+  // Init on load
+  window.addEventListener('DOMContentLoaded', () => {
+    const saved = localStorage.getItem('groq_api_key');
+    if (saved) {
+      document.getElementById('apiKeyInput').value = '●'.repeat(12) + saved.slice(-4);
+      setKeyStatus('✓ Используется твой ключ', 'ok');
+    }
+    // Init choice/tag listeners
+    initInteractions();
+  });
+
+  // ── INTERACTIONS ──
+  function initInteractions() {
+    document.querySelectorAll('.choices[data-type="single"]').forEach(group => {
+      group.querySelectorAll('.choice').forEach(btn => {
+        btn.addEventListener('click', () => {
+          group.querySelectorAll('.choice').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          answers[group.dataset.key] = btn.dataset.val;
+        });
+      });
+    });
+    document.querySelectorAll('.tags[data-type="multi"]').forEach(group => {
+      group.querySelectorAll('.tag').forEach(tag => {
+        tag.addEventListener('click', () => {
+          if (tag.dataset.val === 'none') {
+            group.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+            tag.classList.toggle('selected');
+          } else {
+            group.querySelector('[data-val="none"]')?.classList.remove('selected');
+            tag.classList.toggle('selected');
+          }
+          answers[group.dataset.key] = [...group.querySelectorAll('.tag.selected')].map(t => t.dataset.val);
+        });
+      });
+    });
+  }
+
+  // ── NAVIGATION ──
+  function showStep(n) {
+    document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+    document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+    currentStep = n;
+    const pct = Math.round((n / TOTAL) * 100);
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = `Шаг ${n} из ${TOTAL}`;
+  }
+
+  function next(from) {
+    // Collect freeform fields per step
+    if (from === 2) {
+      answers.sex = document.querySelector('input[name="sex"]:checked').value;
+      answers.age = document.getElementById('q_age').value;
+      answers.height = document.getElementById('q_height').value;
+      answers.weight = document.getElementById('q_weight').value;
+      if (!answers.age || !answers.height || !answers.weight) {
+        alert('Пожалуйста, заполни все поля'); return;
+      }
+    }
+    if (from === 4) answers.breakfast = document.getElementById('q_breakfast').value.trim();
+    if (from === 5) answers.lunch = document.getElementById('q_lunch').value.trim();
+    if (from === 6) answers.dinner = document.getElementById('q_dinner').value.trim();
+    if (from === 7) answers.snacks = document.getElementById('q_snacks').value.trim();
+    if (from === 8) {
+      answers.wakeup = document.getElementById('q_wakeup').value;
+      answers.sleep  = document.getElementById('q_sleep').value;
+      answers.training_time = document.getElementById('q_training_time').value;
+    }
+    if (from === 9) answers.restrictions_text = document.getElementById('q_restrictions_text').value.trim();
+
+    // Validate required choice steps
+    const choiceSteps = { 1:'goal', 3:'activity', 11:'cooking' };
+    if (choiceSteps[from] && !answers[choiceSteps[from]]) {
+      alert('Выбери один из вариантов'); return;
+    }
+
+    showStep(from + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function back(from) {
+    showStep(from - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ── BUILD PROMPT ──
+  function buildPrompt() {
+    const goalMap = {
+      lose_weight: 'похудение',
+      gain_muscle: 'набор мышечной массы',
+      maintain:    'поддержание здоровья',
+      energy:      'повышение энергии и продуктивности',
+    };
+    const actMap = {
+      sedentary: 'сидячий образ жизни (коэффициент 1.2)',
+      light:     'лёгкая активность 1–3 раза в неделю (коэффициент 1.375)',
+      moderate:  'умеренная активность 3–5 раз в неделю (коэффициент 1.55)',
+      high:      'высокая активность ежедневно (коэффициент 1.725)',
+    };
+    const cookMap = {
+      hate:    'не готовит совсем, ест готовое',
+      minimal: 'готовит минимально',
+      normal:  'готовит нормально, 20–40 мин в день',
+      love:    'любит готовить',
+    };
+
+    // Calculate TDEE
+    const sex = answers.sex, age = +answers.age, h = +answers.height, w = +answers.weight;
+    const bmr = sex === 'male' ? 10*w + 6.25*h - 5*age + 5 : 10*w + 6.25*h - 5*age - 161;
+    const actCoeff = { sedentary:1.2, light:1.375, moderate:1.55, high:1.725 };
+    const tdee = Math.round(bmr * (actCoeff[answers.activity] || 1.55));
+    const goalMod = answers.goal === 'lose_weight' ? 0.8 : answers.goal === 'gain_muscle' ? 1.15 : 1.0;
+    const targetKcal = Math.round(tdee * goalMod);
+    const protein = Math.round(w * (answers.goal === 'gain_muscle' ? 2.0 : 1.6));
+    const fat     = Math.round(targetKcal * 0.28 / 9);
+    const carbs   = Math.round((targetKcal - protein*4 - fat*9) / 4);
+
+    const symptoms = Array.isArray(answers.symptoms) ? answers.symptoms.join(', ') : 'не указано';
+    const restrictions = Array.isArray(answers.restrictions) ? answers.restrictions.join(', ') : 'нет';
+
+    return `Ты — нутрициолог и персональный тренер, работающий строго по методологии FPA и современным научным данным. Твой подход — рациональное сбалансированное питание без фанатизма, хайпа и псевдонаучных мифов.
+
+ТВОИ КЛЮЧЕВЫЕ ПРИНЦИПЫ (соблюдай в каждом совете):
+
+1. ЭНЕРГЕТИЧЕСКИЙ БАЛАНС — основа всего. Никакого волшебства. Похудение = дефицит ~500 ккал/день. Набор мышц = профицит 200 ккал/день, не больше. Всё остальное вторично.
+
+2. БЕЛОК — считать в граммах на кг веса, НЕ в процентах:
+   - 0.8–1.2 г/кг — малоактивные без цели изменить состав тела
+   - 1.2–1.8 г/кг — активные люди и спортсмены
+   - 1.5–2.2 г/кг — снижение жира с сохранением мышц
+   При избыточном весе — считать от рекомендуемого веса.
+
+3. ЖИРЫ — качество важнее количества:
+   - Приоритет: ненасыщенные (рыба, авокадо, оливковое масло, орехи)
+   - Насыщенные — умеренно
+   - Трансжиры (маргарин, фастфуд, магазинная выпечка) — исключить
+   - Омега-3 критически важны. У большинства людей соотношение омега-3/омега-6 = 1:30 вместо нормы 1:5
+
+4. УГЛЕВОДЫ — по активности:
+   - Низкая: 3–5 г/кг; Умеренная: 5–7 г/кг; Интенсивные тренировки: 7–10 г/кг
+   - Простые углеводы ограничить, но не демонизировать (до 10–15% от калорийности — норма)
+   - ГИ важен, но не абсолютен: фрукты с высоким ГИ — не враги из-за клетчатки и низкой калорийности
+
+5. МЕДЛЕННЫЕ ИЗМЕНЕНИЯ — единственно устойчивые. Оценка результата через 3–4 недели, не раньше.
+
+6. ПОЛНОЦЕННОСТЬ: 5+ порций овощей и фруктов в день (80–150 г порция), разнообразие источников белка.
+
+7. БЕЗ МИФОВ: никакого "нельзя есть после 18:00", "углеводы вечером запрещены", "детокс", "раздельное питание". Только физиология.
+
+---
+
+ДАННЫЕ КЛИЕНТА:
+- Пол: ${sex === 'male' ? 'мужчина' : 'женщина'}, возраст: ${age} лет, рост: ${h} см, вес: ${w} кг
+- Цель: ${goalMap[answers.goal] || answers.goal}
+- Активность: ${actMap[answers.activity] || answers.activity}
+- Режим дня: подъём ${answers.wakeup}, отбой ${answers.sleep}, тренировки: ${answers.training_time}
+- Готовка: ${cookMap[answers.cooking] || answers.cooking}
+- Ограничения: ${restrictions}${answers.restrictions_text ? '; ' + answers.restrictions_text : ''}
+- Симптомы и жалобы: ${symptoms}
+- Главная проблема: ${answers.main_problem || 'не указана'}
+
+РАССЧИТАННЫЕ НОРМЫ (формула Миффлина-Сан Жеора):
+- Основной обмен (BMR): ${Math.round(sex === 'male' ? 10*w+6.25*h-5*age+5 : 10*w+6.25*h-5*age-161)} ккал
+- TDEE (с учётом активности): ${tdee} ккал/день
+- Целевые калории: ${targetKcal} ккал/день
+- Белки: ${protein} г/день (${(protein/w).toFixed(1)} г/кг веса)
+- Жиры: ${fat} г/день
+- Углеводы: ${carbs} г/день
+
+ТЕКУЩИЙ РАЦИОН КЛИЕНТА:
+Завтрак: ${answers.breakfast || 'пропускает или не указал'}
+Обед: ${answers.lunch || 'не указан'}
+Ужин: ${answers.dinner || 'не указан'}
+Перекусы: ${answers.snacks || 'не указаны'}
+
+---
+
+СТРУКТУРА ОТВЕТА (строго соблюдай эти заголовки):
+
+### АНАЛИЗ РАЦИОНА
+Оцени текущее питание честно. Сопоставь с нормами — хватает ли белка, каковы источники жиров, разумны ли углеводы. Что нормально, что проблематично. Конкретно.
+
+### ОШИБКИ В ПИТАНИИ
+3–5 конкретных ошибок, мешающих цели (${goalMap[answers.goal]}). Для каждой — объясни механизм через физиологию и энергетический баланс. Без мифов.
+
+### ПЛАН ПИТАНИЯ НА ДЕНЬ
+Конкретный план с граммовками под режим, привычки и ограничения этого человека.
+Формат каждого приёма: Время — Блюдо: продукт 1 (Хг) + продукт 2 (Хг) — КБЖУ приёма.
+В конце: ИТОГО за день — калории / белки / жиры / углеводы. Цель: ~${targetKcal} ккал.
+
+### НУТРИТАЙМИНГ
+Когда и что есть под его режим (подъём ${answers.wakeup}, тренировка ${answers.training_time}, отбой ${answers.sleep}). Питание до/после тренировки, интервал перед сном.
+
+### ТРИ ДЕЙСТВИЯ НА ЗАВТРА
+Три конкретных изменения которые реально внедрить уже завтра. Не абстрактные советы — конкретно что, когда, сколько, с учётом его образа жизни.
+
+Пиши по-русски, на "ты", прямо. Без слов "необходимо", "следует", "рекомендуется". Только наука, только конкретика.`;
+  }
+
+  // ── SEND TO AI ──
+  async function sendToAI() {
+    answers.main_problem = document.getElementById('q_main_problem').value.trim();
+    if (!answers.main_problem) { alert('Напиши свою главную проблему'); return; }
+
+    const key = getKey();
+    if (!key) {
+      alert('Сначала введи и сохрани Groq API ключ в блоке выше'); return;
+    }
+
+    // Show loader
+    document.getElementById('quizWrap').style.display = 'none';
+    document.getElementById('loader').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + key,
+        },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 2000,
+          temperature: 0.7,
+          messages: [{ role: 'user', content: buildPrompt() }],
+        }),
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message || 'Ошибка API: ' + res.status);
+      }
+
+      const data = await res.json();
+      const text = data.choices?.[0]?.message?.content || '';
+
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('result-block').style.display = 'block';
+      document.getElementById('share-btn').style.display='inline-flex';
+      document.getElementById('resultBody').innerHTML = formatResult(text);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    } catch (e) {
+      document.getElementById('loader').style.display = 'none';
+      document.getElementById('quizWrap').style.display = 'block';
+      setKeyStatus('Не удалось получить ответ. Проверь ключ или попробуй позже.', 'err');
+      console.error('Groq error:', e);
+    }
+  }
+
+  // ── FORMAT RESULT ──
+  function formatResult(text) {
+    // Convert ### headers, **bold**, bullet lists to HTML
+    return text
+      .replace(/### (.+)/g, '<h3>$1</h3>')
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/^- (.+)/gm, '<li>$1</li>')
+      .replace(/(<li>.*<\/li>\n?)+/g, s => '<ul>' + s + '</ul>')
+      .replace(/\n{2,}/g, '</p><p>')
+      .replace(/^(?!<[hup])/gm, '')
+      .replace(/<p><\/p>/g, '');
+  }
+
+  // ── RESTART ──
+  function restart() {
+    Object.keys(answers).forEach(k => delete answers[k]);
+    document.querySelectorAll('.choice').forEach(c => c.classList.remove('selected'));
+    document.querySelectorAll('.tag').forEach(t => t.classList.remove('selected'));
+    document.querySelectorAll('textarea').forEach(t => t.value = '');
+    document.getElementById('result-block').style.display = 'none';
+    document.getElementById('quizWrap').style.display = 'block';
+    showStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+    function copyAiResult() {
+      const text = document.getElementById('resultBody').innerText;
+      navigator.clipboard.writeText('Рекомендации по питанию:\n\n' + text).then(() => {
+        const btn = document.getElementById('share-btn');
+        const orig = btn.textContent;
+        btn.textContent = '✓ Скопировано!'; btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>
