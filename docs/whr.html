@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Талия к бёдрам (WHR) — Формулы здоровья</title>
+  <meta name="description" content="Калькулятор соотношения талии к бёдрам (WHR). Оцените риск висцерального ожирения и метаболических заболеваний.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── TAB SWITCHER ── */
+    .tab-switcher{display:flex;gap:3px;padding:4px;background:var(--bg);border:1px solid var(--border);border-radius:10px;width:fit-content;margin-bottom:24px;}
+    .tab-btn{padding:8px 22px;border-radius:7px;font-size:13px;font-weight:600;font-family:var(--font);border:none;cursor:pointer;transition:all var(--transition);background:transparent;color:var(--text-muted);}
+    .tab-btn:hover{color:var(--text);}
+    .tab-btn.active-basic{background:rgba(0,0,0,0.05);color:var(--text);}
+    .tab-btn.active-pro{background:linear-gradient(135deg,rgba(180,140,60,0.25),rgba(160,110,200,0.2));color:#c9a84c;border:1px solid rgba(180,140,60,0.3);}
+    .tab-pane{display:none;}
+    .tab-pane.active{display:block;animation:fadeUp .25s ease both;}
+  </style>
+  <meta property="og:title" content="Талия к бёдрам (WHR) — Формулы здоровья">
+  <meta property="og:description" content="Калькулятор соотношения талии к бёдрам (WHR). Оцените риск висцерального ожирения и метаболических заболеваний.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/whr.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">⚖</span>️ Талия к бёдрам (WHR)</h1>
+      <p>Оценка висцерального ожирения и метаболических рисков</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Талия к бёдрам (WHR)</span></nav>
+
+    <!-- TAB SWITCHER -->
+    <div class="tab-switcher">
+      <button class="tab-btn active-basic" id="tab-basic" onclick="switchTab('basic')">Базовый</button>
+      <button class="tab-btn" id="tab-pro" onclick="switchTab('pro')">⭐ PRO</button>
+    </div>
+
+    <!-- ══════════════════ БАЗОВЫЙ ══════════════════ -->
+    <div class="tab-pane active" id="pane-basic">
+      <div class="formula-box" style="background:rgba(0,0,0,0.25);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 15px;font-family:var(--font-mono);font-size:13px;color:var(--text-mid);margin-bottom:20px;">
+        WHR = Окружность талии (см) / Окружность бёдер (см)
+      </div>
+      <fieldset><legend>Пол</legend>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="gender_b" value="male" checked> Мужской</label>
+        <label class="radio-option"><input type="radio" name="gender_b" value="female"> Женский</label>
+      </div>
+      </fieldset>
+      <div class="form-group"><label for="waist_b">Окружность талии (см) — на уровне пупка</label><input type="number" id="waist_b" placeholder="80" min="40" max="200"></div>
+      <div class="form-group"><label for="hips_b">Окружность бёдер (см) — по наиболее широкой части</label><input type="number" id="hips_b" placeholder="95" min="50" max="250"></div>
+      <button class="btn-calculate" style="background:linear-gradient(135deg,#d48a1a,#a06020);" onclick="calcBasic()">Рассчитать WHR</button>
+      <div id="result_b" style="display:none;margin-top:24px;">
+        <p class="result-title">Результат</p>
+        <div class="results-grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+          <div class="result-card"><h4>WHR индекс</h4><span class="result-value" id="whrVal_b">—</span></div>
+          <div class="result-card"><h4>Риск</h4><span class="result-value" id="whrRisk_b" style="font-size:15px">—</span></div>
+        </div>
+        <span class="status-badge" id="whrBadge_b"></span>
+        <div id="normTable_b" style="margin-top:14px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);"></div>
+        <button class="share-btn" id="share-btn-b" onclick="shareBasic()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+      </div>
+    </div>
+
+    <!-- ══════════════════ PRO ══════════════════ -->
+    <div class="tab-pane" id="pane-pro">
+      <div class="formula-box" style="background:rgba(0,0,0,0.35);border:1px solid rgba(180,140,60,0.2);border-radius:var(--radius-sm);padding:14px 16px;font-family:var(--font-mono);font-size:13px;color:#c9a84c;margin-bottom:20px;line-height:1.6;">
+        WHR = Окружность талии (см) / Окружность бёдер (см)
+        Индекс талия/рост = Талия / Рост
+      </div>
+      <fieldset><legend>Пол</legend>
+      <div class="radio-group">
+        <label class="radio-option"><input type="radio" name="gender_p" value="male" checked> Мужской</label>
+        <label class="radio-option"><input type="radio" name="gender_p" value="female"> Женский</label>
+      </div>
+      </fieldset>
+      <div class="form-group"><label for="waist_p">Окружность талии (см) — на уровне пупка</label><input type="number" id="waist_p" placeholder="82" min="40" max="200"></div>
+      <div class="form-group"><label for="hips_p">Окружность бёдер (см) — по наиболее широкой части</label><input type="number" id="hips_p" placeholder="98" min="50" max="200"></div>
+      <div class="form-group"><label for="height_p">Рост (см) — для индекса талия/рост</label><input type="number" id="height_p" placeholder="175" min="140" max="220"></div>
+      <button class="btn-calculate btn-calc-pro" onclick="calcPro()">Рассчитать PRO-анализ</button>
+      <div id="result_p" style="display:none;margin-top:24px;">
+        <p class="result-title">PRO-анализ</p>
+        <div class="results-grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;">
+          <div class="result-card"><h4>WHR</h4><span class="result-value" id="whrVal_p" style="color:#c9a84c">—</span></div>
+          <div class="result-card"><h4>Талия/Рост</h4><span class="result-value" id="whrWthr" style="color:#a06bc8">—</span></div>
+          <div class="result-card"><h4>Оценка WHR</h4><span class="result-value" id="whrCat_p" style="font-size:13px">—</span></div>
+        </div>
+        <span class="status-badge" id="whrBadge_p"></span>
+        <div id="normTable_p" style="margin-top:14px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);"></div>
+        <div id="wthrResult_p" style="margin-top:12px;" class="info-block"></div>
+        <button class="share-btn" id="share-btn-p" onclick="sharePro()">📋 Скопировать результат</button>
+      </div>
+      <div class="pro-explain" style="margin-top:20px;">
+        <h3>📖 Почему WHR важнее ИМТ</h3>
+        <p>ИМТ не различает, где именно находится жир. Висцеральный жир вокруг органов — метаболически активен и опасен. Он провоцирует <strong>инсулинорезистентность, диабет 2 типа, атеросклероз и гипертонию</strong>. Даже человек с нормальным ИМТ может иметь опасный уровень висцерального жира — это «метаболическое ожирение при нормальном весе».</p>
+      </div>
+      <div class="pro-practice" style="margin-top:12px;">
+        <h3>🏋️ Как снизить висцеральный жир</h3>
+        <ul>
+          <li>Аэробные тренировки 30+ мин в зоне 2–3 — самый эффективный метод</li>
+          <li>Силовые тренировки улучшают инсулиночувствительность</li>
+          <li>Снижение талии на 1 см — уже значимый прогресс</li>
+          <li>Повторяй замеры раз в 4 недели, не чаще</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- RELATED -->
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#whr" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Индекс WHR →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="bodyfat.html" class="related-card"><span class="related-card-icon">💪</span><span class="related-card-name">Процент жира</span><span class="related-card-hint">Формула ВМС США</span></a>
+        <a href="imt.html" class="related-card"><span class="related-card-icon">📊</span><span class="related-card-name">Индекс массы тела</span><span class="related-card-hint">Оценка ВОЗ</span></a>
+        <a href="pro_bju_pro.html" class="related-card"><span class="related-card-icon">🥩</span><span class="related-card-name">Нормы БЖУ PRO</span><span class="related-card-hint">Питание по целям</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'whr';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p><p>Измерять натощак утром</p></footer>
+  </div></main>
+
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+  <script>
+  // ── Inline validation helper ──
+  function showErr(id,msg){const el=document.getElementById(id);if(!el)return;let e=el.parentNode.querySelector('.field-error');if(!e){e=document.createElement('div');e.className='field-error';el.parentNode.appendChild(e);}e.innerHTML='⚠️ '+msg;e.classList.add('visible');el.style.borderColor='rgba(255,107,107,0.7)';el.addEventListener('input',function c(){e.classList.remove('visible');el.style.borderColor='';el.removeEventListener('input',c);},{once:true});}
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-basic').className = 'tab-btn' + (tab==='basic'?' active-basic':'');
+    document.getElementById('tab-pro').className   = 'tab-btn' + (tab==='pro'?' active-pro':'');
+    document.getElementById('pane-'+tab).classList.add('active');
+  }
+
+  const NORMS_M = [{max:.90,label:'Норма',color:'#29a86a',bg:'rgba(41,168,106,.12)'},{max:1.0,label:'Повышенный риск',color:'#d48a1a',bg:'rgba(212,138,26,.12)'},{max:99,label:'Высокий риск',color:'#c94b3b',bg:'rgba(201,75,59,.12)'}];
+  const NORMS_F = [{max:.80,label:'Норма',color:'#29a86a',bg:'rgba(41,168,106,.12)'},{max:.85,label:'Повышенный риск',color:'#d48a1a',bg:'rgba(212,138,26,.12)'},{max:99,label:'Высокий риск',color:'#c94b3b',bg:'rgba(201,75,59,.12)'}];
+  const ROWS_M  = [['≤ 0,90','Норма','#29a86a'],['0,90–0,99','Повышенный риск','#d48a1a'],['≥ 1,00','Высокий риск','#c94b3b']];
+  const ROWS_F  = [['≤ 0,80','Норма','#29a86a'],['0,80–0,84','Повышенный риск','#d48a1a'],['≥ 0,85','Высокий риск','#c94b3b']];
+
+  function renderNormTable(tableId,rows,cat){
+    document.getElementById(tableId).innerHTML=rows.map(([range,label,color],i,arr)=>
+      `<div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:${i<arr.length-1?'1px solid var(--border)':'none'};font-size:12.5px;background:${label===cat.label?cat.bg:''};">
+       <span style="color:${color};font-weight:600">${range}</span><span style="color:var(--text-muted)">${label}</span></div>`).join('');
+  }
+
+  function calcBasic(){
+    const g=document.querySelector('input[name="gender_b"]:checked').value;
+    const w=+document.getElementById('waist_b').value;
+    const h=+document.getElementById('hips_b').value;
+    if(!w){showErr('waist_b','Введите окружность талии');return;}
+    if(!h){showErr('hips_b','Введите окружность бёдер');return;}
+    const whr=(w/h).toFixed(2);
+    const norms=g==='male'?NORMS_M:NORMS_F;
+    const cat=norms.find(n=>whr<n.max)||norms[norms.length-1];
+    document.getElementById('whrVal_b').textContent=whr;
+    document.getElementById('whrRisk_b').textContent=cat.label;
+    document.getElementById('whrRisk_b').style.color=cat.color;
+    const badge=document.getElementById('whrBadge_b');
+    badge.textContent=cat.label;badge.style.background=cat.bg;badge.style.color=cat.color;badge.style.border='1px solid '+cat.color+'44';
+    renderNormTable('normTable_b',g==='male'?ROWS_M:ROWS_F,cat);
+    document.getElementById('result_b').style.display='block';
+    document.getElementById('share-btn-b').style.display='inline-flex';
+      document.getElementById('save-history-btn').style.display='flex';
+    if(window.HistoryModule)HistoryModule.saveToHistory({calc:'whr',label:'Талия к бёдрам WHR',result:whr+' — '+cat.label,date:HistoryModule.formatDate(),href:'whr.html',params:{waist:w,hips:h}});
+      if(window.App)App.saveCalc('whr',{waist:w,hips:h},whr+' — '+cat.label,'Талия к бёдрам WHR');
+  }
+
+  function calcPro(){
+    const g=document.querySelector('input[name="gender_p"]:checked').value;
+    const w=+document.getElementById('waist_p').value;
+    const h=+document.getElementById('hips_p').value;
+    const ht=+document.getElementById('height_p').value;
+    if(!w){showErr('waist_p','Введи окружность талии');return;}
+    if(!h){showErr('hips_p','Введи окружность бёдер');return;}
+    const whr=(w/h).toFixed(2);
+    const wthr=ht?(w/ht).toFixed(2):null;
+    const norms=g==='male'?NORMS_M:NORMS_F;
+    const cat=norms.find(n=>whr<n.max)||norms[norms.length-1];
+    document.getElementById('whrVal_p').textContent=whr;
+    document.getElementById('whrWthr').textContent=wthr||'—';
+    document.getElementById('whrCat_p').textContent=cat.label;
+    document.getElementById('whrCat_p').style.color=cat.color;
+    const badge=document.getElementById('whrBadge_p');
+    badge.textContent=cat.label;badge.style.background=cat.bg;badge.style.color=cat.color;badge.style.border='1px solid '+cat.color+'44';
+    renderNormTable('normTable_p',g==='male'?ROWS_M:ROWS_F,cat);
+    if(wthr){
+      const ok=wthr<0.5;
+      document.getElementById('wthrResult_p').innerHTML=`<h3 style="font-size:12px;font-weight:600;color:${ok?'#29a86a':'#d48a1a'};margin-bottom:6px;">Индекс талия/рост: ${wthr} — ${ok?'Норма (< 0,5)':'Выше нормы (≥ 0,5)'}</h3><p style="font-size:12.5px;color:var(--text-muted);">Индекс ≥ 0,5 — маркер метаболического риска, более точный чем ИМТ. Норма < 0,5 для всех.</p>`;
+    }
+    document.getElementById('result_p').style.display='block';
+    document.getElementById('share-btn-p').style.display='inline-flex';
+    if(window.App)App.saveCalc('whr',{waist:w,hips:h,height:ht,gender:g},whr+' PRO-анализ','WHR PRO-анализ');
+  }
+
+  function shareBasic(){
+    const val=document.getElementById('whrVal_b').textContent+' — '+document.getElementById('whrRisk_b').textContent;
+    copyResult('Талия к бёдрам WHR',val,'share-btn-b');
+  }
+  function sharePro(){
+    const val=document.getElementById('whrVal_p').textContent+' WHR PRO';
+    copyResult('WHR PRO-анализ',val,'share-btn-p');
+  }
+  function copyResult(label,val,btnId){
+    const text=label+': '+val+' | calculatefitness.pro';
+    navigator.clipboard.writeText(text).then(()=>{
+      const btn=document.getElementById(btnId);
+      btn.innerHTML='✓ Скопировано!';btn.classList.add('copied');
+      setTimeout(()=>{btn.innerHTML='📋 Скопировать результат';btn.classList.remove('copied');},2000);
+    }).catch(()=>{});
+  }
+
+  // Auto-open PRO tab if #pro in URL
+  if(location.hash==='#pro'){switchTab('pro');}
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

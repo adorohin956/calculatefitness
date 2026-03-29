@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Об авторе — Формулы здоровья</title>
+  <meta name="description" content="Дорохин Алексей Олегович — персональный тренер, мастер спорта по стритлифтингу, нутрициолог. Квалификация FPA, стаж 6 лет.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .author-wrap {
+      display: flex; align-items: center; gap: 24px;
+      margin-bottom: 32px;
+    }
+    .author-photo-ring {
+      flex-shrink: 0;
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 1px solid var(--border-h);
+      overflow: hidden;
+    }
+    .author-photo-ring img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .author-name {
+      font-size: clamp(18px, 3.5vw, 24px);
+      font-weight: 600; color: var(--text); letter-spacing: -0.3px;
+      margin-bottom: 4px;
+    }
+    .author-role { font-size: 13px; color: var(--text-muted); }
+
+    .badges {
+      display: flex; flex-wrap: wrap; gap: 7px;
+      margin-bottom: 28px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 6px 13px; border-radius: 50px;
+      font-size: 12px; font-weight: 500;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text-mid);
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 8px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 16px; text-align: center;
+    }
+    .stat-icon { font-size: 18px; margin-bottom: 8px; display: block; }
+    .stat-num { font-size: 20px; font-weight: 700; color: var(--text); display: block; margin-bottom: 3px; }
+    .stat-label { font-size: 11px; color: var(--text-muted); line-height: 1.4; }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 8px;
+    }
+    .c-btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 13px 16px; border-radius: var(--radius-sm);
+      text-decoration: none; color: var(--text);
+      font-size: 13px; font-weight: 600;
+      transition: filter var(--transition), transform var(--transition);
+    }
+    .c-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .c-email { background: linear-gradient(135deg, #3d8fd4, #1a6fa8); }
+    .c-vk    { background: linear-gradient(135deg, #4a76a8, #2c5282); }
+    .c-tg    { background: linear-gradient(135deg, #229ed9, #1275a0); }
+
+    @media (max-width: 480px) {
+      .author-wrap { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="Об авторе — Формулы здоровья">
+  <meta property="og:description" content="Дорохин Алексей Олегович — персональный тренер, мастер спорта по стритлифтингу, нутрициолог. Квалификация FPA, стаж 6 лет.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/aboutme.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Об авторе — Формулы здоровья">
+  <meta name="twitter:description" content="Дорохин Алексей Олегович — персональный тренер, мастер спорта по стритлифтингу, нутрициолог. Квалификация FPA, стаж 6 лет.">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Об авторе</span></nav>
+
+    <div class="author-wrap">
+      <div class="author-photo-ring">
+        <img src="photo_5273722697483490476_w.jpg" alt="Алексей Дорохин" loading="lazy" width="400" height="400">
+      </div>
+      <div>
+        <p class="author-name">Дорохин Алексей Олегович</p>
+        <p class="author-role">Персональный тренер · Мастер спорта · Нутрициолог</p>
+      </div>
+    </div>
+
+    <div class="badges">
+      <span class="badge"><span class="badge-dot" style="background:#3d8fd4"></span>Квалификация FPA</span>
+      <span class="badge"><span class="badge-dot" style="background:#29a86a"></span>МС по стритлифтингу</span>
+      <span class="badge"><span class="badge-dot" style="background:#d48a1a"></span>Стаж 6 лет</span>
+      <span class="badge"><span class="badge-dot" style="background:#8a6bcc"></span>Онлайн и оффлайн</span>
+    </div>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="stat-icon"><span aria-hidden="true">🏆</span></span>
+        <span class="stat-num">МС</span>
+        <span class="stat-label">Мастер спорта<br>по стритлифтингу</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span aria-hidden="true">📅</span></span>
+        <span class="stat-num">6 лет</span>
+        <span class="stat-label">Тренерский<br>стаж</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-icon"><span aria-hidden="true">🎓</span></span>
+        <span class="stat-num">FPA</span>
+        <span class="stat-label">Сертификат<br>тренера</span>
+      </div>
+    </div>
+
+    <div class="info-block" style="margin-bottom:14px;">
+      <h3>О сайте</h3>
+      <p>Этот сайт создан чтобы сделать спортивную науку доступной каждому. Здесь собраны проверенные формулы для расчёта калорий, антропометрических показателей, зон пульса и нормы воды — всё то, с чем тренер работает ежедневно на практике.</p>
+    </div>
+
+    <div class="info-block">
+      <h3>Связаться</h3>
+      <div class="contact-grid" style="margin-top:12px;">
+        <a href="/cdn-cgi/l/email-protection#44252d3628252a20767474042329252d286a272b29" class="c-btn c-email">✉️ Написать на почту</a>
+        <a href="https://vk.com/airland2"  class="c-btn c-vk"  target="_blank">💙 ВКонтакте</a>
+        <a href="https://t.me/ateread"     class="c-btn c-tg"  target="_blank">✈️ Telegram</a>
+      </div>
+    </div>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О. Все права защищены.</p></footer>
+  </div></main>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+</body>
+</html>

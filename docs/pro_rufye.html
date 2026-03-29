@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Тест Руфье — Формулы здоровья PRO</title>
+  <meta name="description" content="Тест Руфье — оценка работоспособности сердечно-сосудистой системы. Инструкция по проведению и интерпретация результата.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .step-guide { counter-reset: steps; }
+    .step-item { display:flex; gap:12px; align-items:flex-start; margin-bottom:12px; }
+    .step-num {
+      width:26px; height:26px; border-radius:50%; flex-shrink:0;
+      background:rgba(180,140,60,0.15); border:1px solid rgba(180,140,60,0.3);
+      color:#c9a84c; font-size:12px; font-weight:700;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .step-text { font-size:13px; color:var(--text-mid); line-height:1.6; padding-top:3px; }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="Тест Руфье — Формулы здоровья PRO">
+  <meta property="og:description" content="Тест Руфье — оценка работоспособности сердечно-сосудистой системы. Инструкция по проведению и интерпретация результата.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/pro_rufye.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Тест Руфье — Формулы здоровья PRO">
+  <meta name="twitter:description" content="Тест Руфье — оценка работоспособности сердечно-сосудистой системы. Инструкция по проведению и интерпретация результата.">
+
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🫀</span> Тест Руфье <span class="pro-badge">PRO</span></h1>
+      <p>Оценка работоспособности сердечно-сосудистой системы</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Тест Руфье</span></nav>
+
+    <div class="formula-box">
+      Индекс Руфье = ((P1 + P2 + P3) − 200) / 10
+    </div>
+
+    <div class="info-block" style="margin-bottom:20px;">
+      <h3>Как провести тест — порядок действий</h3>
+      <div class="step-guide" style="margin-top:10px;">
+        <div class="step-item"><div class="step-num">1</div><div class="step-text">Посиди спокойно 5 минут. Измерь пульс за 15 секунд × 4 = <strong>P1</strong> (пульс покоя)</div></div>
+        <div class="step-item"><div class="step-num">2</div><div class="step-text">Выполни <strong>30 приседаний за 45 секунд</strong> — глубоких, в среднем темпе</div></div>
+        <div class="step-item"><div class="step-num">3</div><div class="step-text">Сразу после — измерь пульс за 15 сек × 4 = <strong>P2</strong> (пульс после нагрузки)</div></div>
+        <div class="step-item"><div class="step-num">4</div><div class="step-text">Отдохни 1 минуту стоя. Измерь пульс за 15 сек × 4 = <strong>P3</strong> (пульс восстановления)</div></div>
+      </div>
+    </div>
+
+    <div class="form-group"><label for="p1">P1 — Пульс в покое (уд/мин)</label><input type="number" id="p1" placeholder="70" min="40" max="120"></div>
+    <div class="form-group"><label for="p2">P2 — Пульс сразу после 30 приседаний (уд/мин)</label><input type="number" id="p2" placeholder="120" min="60" max="220"></div>
+    <div class="form-group"><label for="p3">P3 — Пульс после 1 минуты отдыха (уд/мин)</label><input type="number" id="p3" placeholder="90" min="40" max="180"></div>
+    <button class="btn-calculate btn-calc-pro" onclick="calc()">Рассчитать индекс</button>
+
+    <div id="result">
+      <p class="result-title">Результат</p>
+      <div class="results-grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;">
+        <div class="result-card"><h4>Индекс Руфье</h4><span class="result-value" id="rufyeVal" style="color:#c9a84c">—</span></div>
+        <div class="result-card"><h4>Оценка</h4><span class="result-value" id="rufyeCat" style="font-size:14px">—</span></div>
+      </div>
+      <span class="status-badge" id="rufyeBadge"></span>
+      <div id="rufyeTable" style="margin-top:14px;border-radius:var(--radius-md);overflow:hidden;border:1px solid var(--border);"></div>
+    </div>
+
+    <div class="pro-explain">
+      <h3>📖 Что показывает тест</h3>
+      <p>Тест Руфье оценивает, насколько эффективно сердце справляется с нагрузкой и как быстро восстанавливается после неё. Чем ниже индекс — тем лучше работает сердечно-сосудистая система. Тренеры FPA используют этот тест в начале работы с клиентом, чтобы понять его текущий уровень и правильно дозировать нагрузки.</p>
+      <p style="margin-top:8px;"><strong>⚠️ Противопоказания:</strong> заболевания сердца, гипертония, состояния после операций, беременность. При любых сомнениях — проконсультируйся с врачом.</p>
+    </div>
+
+    <div class="pro-practice">
+      <h3>🏋️ Как применять результат</h3>
+      <ul>
+        <li><strong>Отлично / Хорошо</strong> — можно давать полноценные кардио нагрузки, интервальные тренировки</li>
+        <li><strong>Удовлетворительно</strong> — начинать с зоны 1–2 (50–70% ЧСС макс), постепенно прогрессировать</li>
+        <li><strong>Плохо</strong> — только лёгкие нагрузки, консультация с врачом перед программой тренировок</li>
+        <li>Повторяй тест каждые 4–6 недель для отслеживания прогресса</li>
+      </ul>
+    
+      <button class="share-btn" id="share-btn" onclick="shareResult()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+    </div>
+
+    
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#rufye" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Тест Руфье →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="pro_ortostatic.html" class="related-card"><span class="related-card-icon">🧍</span><span class="related-card-name">Ортостатическая проба</span><span class="related-card-hint">Восстановление НС</span></a>
+        <a href="pro_martine.html" class="related-card"><span class="related-card-icon">🏃</span><span class="related-card-name">Проба Мартинэ</span><span class="related-card-hint">Реакция ССС</span></a>
+        <a href="pro_karvonen.html" class="related-card"><span class="related-card-icon">❤️</span><span class="related-card-name">Метод Карвонена PRO</span><span class="related-card-hint">Тренировочный пульс</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'pro_rufye';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p><p>Проконсультируйтесь с врачом при заболеваниях ССС</p></footer>
+  </div></main>
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+<script>
+  // ── Inline validation helper ──
+  function showErr(fieldId, msg) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    let err = el.parentNode.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error';
+      el.parentNode.appendChild(err);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    el.style.borderColor = 'rgba(255,107,107,0.7)';
+    el.addEventListener('input', function clear() {
+      err.classList.remove('visible');
+      el.style.borderColor = '';
+      el.removeEventListener('input', clear);
+    }, { once: true });
+  }
+  function showFormErr(msg) {
+    // Show error near the calculate button
+    const btn = document.querySelector('.btn-calculate');
+    if (!btn) return;
+    let err = btn.parentNode.querySelector('.form-level-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error form-level-error';
+      err.style.marginBottom = '8px';
+      btn.parentNode.insertBefore(err, btn);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    setTimeout(() => err.classList.remove('visible'), 4000);
+  }
+</script>
+  <script>
+    const CATS = [
+      { max:3,  label:'Отлично',           color:'#29a86a', bg:'rgba(41,168,106,.12)' },
+      { max:6,  label:'Хорошо',            color:'#3d8fd4', bg:'rgba(74,124,107,.12)' },
+      { max:9,  label:'Удовлетворительно', color:'#d48a1a', bg:'rgba(212,138,26,.12)' },
+      { max:999,label:'Плохо',             color:'#c94b3b', bg:'rgba(201,75,59,.12)'  },
+    ];
+    function calc() {
+      const p1=+document.getElementById('p1').value;
+      const p2=+document.getElementById('p2').value;
+      const p3=+document.getElementById('p3').value;
+      if(!p1){showErr('p1','Введи P1 — пульс в покое');return;}if(!p2){showErr('p2','Введи P2 — пульс после нагрузки');return;}if(!p3){showErr('p3','Введи P3 — пульс после отдыха');return;}
+      const idx = ((p1+p2+p3)-200)/10;
+      const cat = CATS.find(c=>idx<c.max)||CATS[CATS.length-1];
+      document.getElementById('rufyeVal').textContent = idx.toFixed(1);
+      document.getElementById('rufyeCat').textContent = cat.label;
+      document.getElementById('rufyeCat').style.color = cat.color;
+      const badge = document.getElementById('rufyeBadge');
+      badge.textContent=cat.label; badge.style.background=cat.bg;
+      badge.style.color=cat.color; badge.style.border='1px solid '+cat.color+'44';
+      document.getElementById('rufyeTable').innerHTML = [
+        ['< 3','Отлично','#29a86a'],['3 – 6','Хорошо','#3d8fd4'],
+        ['6 – 9','Удовлетворительно','#d48a1a'],['> 9','Плохо','#c94b3b'],
+      ].map(([range,label,color],i,arr)=>`
+        <div style="display:flex;justify-content:space-between;padding:11px 16px;border-bottom:${i<arr.length-1?'1px solid var(--border)':'none'};font-size:12.5px;background:${label===cat.label?cat.bg:''};">
+          <span style="color:${color};font-weight:600">${range}</span>
+          <span style="color:var(--text-muted)">${label}</span>
+        </div>`).join('');
+      document.getElementById('result').style.display='block';
+      if(window.HistoryModule){if(window.HistoryModule)HistoryModule.saveToHistory({calc:'pro_rufye',label:'Тест Руфье PRO',result:idx.toFixed(1)+' — '+cat.label,date:HistoryModule.formatDate(),href:'pro_rufye.html',params:{p1,p2,p3}});
+      if(window.App)App.saveCalc('pro_rufye',{p1,p2,p3},idx.toFixed(1)+' — '+cat.label,'Тест Руфье PRO');}
+    document.getElementById('share-btn').style.display='inline-flex';;
+      document.getElementById('save-history-btn').style.display='flex';
+    }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

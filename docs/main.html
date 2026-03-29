@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Формулы здоровья</title>
+  <meta name="description" content="Профессиональные фитнес-калькуляторы от тренера и нутрициолога. Рассчитайте калории, ИМТ, процент жира, нормы БЖУ, пульсовые зоны и многое другое.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .cat-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:8px;}
+    .cat-btn{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;padding:22px 12px 18px;border-radius:var(--radius-md);border:1px solid var(--border);background:var(--bg-card);cursor:pointer;font-family:var(--font);transition:background var(--transition),border-color var(--transition),transform var(--transition);text-align:center;}
+    .cat-btn:hover{background:var(--bg-card-h);border-color:var(--border-h);transform:translateY(-2px);}
+    .cat-btn.active{border-color:var(--cat-color,var(--accent));background:rgba(var(--cat-rgb,61 143 212),.08);}
+    .cat-btn::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:var(--radius-md) var(--radius-md) 0 0;background:var(--cat-color,var(--accent));opacity:0;transition:opacity var(--transition);}
+    .cat-btn:hover::after,.cat-btn.active::after{opacity:1;}
+    .cat-icon{font-size:24px;line-height:1;}
+    .cat-label{font-size:12px;font-weight:600;color:var(--text-mid);line-height:1.3;}
+    .cat-btn.active .cat-label{color:var(--text);}
+    .cat-count{font-size:10px;color:var(--text-muted);font-family:var(--font-mono);}
+    .cat-chevron{position:absolute;bottom:7px;right:9px;font-size:9px;color:var(--text-muted);transition:transform var(--transition);}
+    .cat-btn.active .cat-chevron{transform:rotate(180deg);}
+
+    .cat-panel{display:none;border:1px solid var(--border);border-radius:var(--radius-md);overflow:hidden;margin-bottom:10px;animation:panelIn .22s ease both;}
+    .cat-panel.open{display:block;}
+    @keyframes panelIn{from{opacity:0;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+
+    .panel-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(255,255,255,.04);border-bottom:1px solid var(--border);}
+    .panel-header-icon{font-size:15px;}
+    .panel-header-title{font-size:11.5px;font-weight:600;color:var(--text-mid);}
+
+    .panel-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border);text-decoration:none;color:var(--text-mid);font-size:13px;transition:background var(--transition),color var(--transition);}
+    .panel-item:last-child{border-bottom:none;}
+    .panel-item:hover{background:rgba(255,255,255,.05);color:var(--text);}
+    .panel-item.pro-item:hover{background:rgba(180,140,60,.06);}
+    .panel-item-icon{font-size:15px;flex-shrink:0;width:20px;text-align:center;}
+    .panel-item-text{flex:1;}
+    .panel-item-name{font-weight:500;display:block;margin-bottom:1px;}
+    .panel-item-hint{font-size:11px;color:var(--text-muted);}
+    .panel-item-arrow{font-size:11px;color:var(--border-h);flex-shrink:0;transition:transform var(--transition);}
+    .panel-item:hover .panel-item-arrow{transform:translateX(3px);color:var(--text-muted);}
+    /* ── CONFIRM MODAL ── */
+    .modal-backdrop {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 20px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .modal-backdrop.open {
+      opacity: 1; pointer-events: all;
+    }
+    .modal-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(0,0,0,0.06);
+      border-radius: 20px;
+      padding: 32px 28px;
+      max-width: 360px; width: 100%;
+      text-align: center;
+      transform: scale(0.9) translateY(10px);
+      transition: transform 0.25s cubic-bezier(.36,1.56,.64,1);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.5);
+    }
+    .modal-backdrop.open .modal-card {
+      transform: scale(1) translateY(0);
+    }
+    .modal-icon {
+      font-size: 36px; margin-bottom: 14px; display: block;
+    }
+    .modal-title {
+      font-size: 18px; font-weight: 600; color: var(--text);
+      margin-bottom: 8px;
+    }
+    .modal-sub {
+      font-size: 13px; color: var(--text-muted);
+      line-height: 1.6; margin-bottom: 24px;
+    }
+    .modal-btns {
+      display: flex; gap: 10px;
+    }
+    .modal-btn-cancel {
+      flex: 1; padding: 12px; border-radius: 10px;
+      background: rgba(0,0,0,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text-mid); font-size: 14px; font-weight: 600;
+      font-family: var(--font); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .modal-btn-cancel:hover {
+      background: rgba(0,0,0,0.06);
+      color: var(--text);
+    }
+    .modal-btn-confirm {
+      flex: 1; padding: 12px; border-radius: 10px;
+      background: rgba(201,75,59,0.2);
+      border: 1px solid rgba(201,75,59,0.4);
+      color: var(--red); font-size: 14px; font-weight: 600;
+      font-family: var(--font); cursor: pointer;
+      transition: all var(--transition);
+    }
+    .modal-btn-confirm:hover {
+      background: rgba(201,75,59,0.35);
+      border-color: rgba(201,75,59,0.7);
+      color: var(--red);
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="Формулы здоровья">
+  <meta property="og:description" content="Профессиональные фитнес-калькуляторы от тренера и нутрициолога. Рассчитайте калории, ИМТ, процент жира, нормы БЖУ, пульсовые зоны и многое другое.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/main.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Формулы здоровья">
+  <meta name="twitter:description" content="Профессиональные фитнес-калькуляторы от тренера и нутрициолога. Рассчитайте калории, ИМТ, процент жира, нормы БЖУ, пульсовые зоны и многое другое.">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <header class="site-header">
+      <p class="site-eyebrow">Персональный тренер · Нутрициолог</p>
+      <h1><strong>Формулы</strong> здоровья</h1>
+      <p class="subtitle">Калькуляторы для контроля состава тела, питания и тренировок</p>
+    </header>
+
+    <nav class="nav-bar">
+      <a href="aboutme.html">Об авторе</a>
+      <a href="methods.html">Методы расчёта</a>
+      <button id="forget-all-btn" onclick="openResetModal()">Сбросить данные</button>
+    </nav>
+
+
+    <!-- ИСТОРИЯ РАСЧЁТОВ (показывается если есть данные) -->
+    <div id="history-block" style="display:none;margin-bottom:20px;">
+    </div>
+    <!-- AI BANNER -->
+    <a href="nutrition_ai.html" style="display:block;text-decoration:none;margin-bottom:20px;">
+      <div style="background:linear-gradient(135deg,rgba(74,124,107,.12),rgba(124,92,191,.1));border:1px solid rgba(74,124,107,.25);border-radius:var(--radius-md);padding:15px 18px;display:flex;align-items:center;gap:14px;transition:all var(--transition);" onmouseover="this.style.borderColor='rgba(74,124,107,.5)'" onmouseout="this.style.borderColor='rgba(74,124,107,.25)'">
+        <div style="font-size:24px;flex-shrink:0;">🧠</div>
+        <div style="flex:1;">
+          <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px;">AI-разбор твоего питания</p>
+          <p style="font-size:11px;color:var(--text-muted);">12 вопросов → анализ рациона, ошибки и план питания на день</p>
+        </div>
+        <div style="font-size:12px;color:rgba(74,124,107,.7);flex-shrink:0;">→</div>
+      </div>
+    </a>
+
+    <!-- 4 CATEGORY BUTTONS -->
+    <div class="cat-grid">
+      <button class="cat-btn" style="--cat-color:#3d8fd4;" onclick="toggle('anthro')" aria-expanded="false" aria-controls="panel-anthro">
+        <span class="cat-icon"><span aria-hidden="true">📐</span></span>
+        <span class="cat-label">Антропометрия и состав тела</span>
+        <span class="cat-count">6 инструментов</span>
+        <span class="cat-chevron">▼</span>
+      </button>
+      <button class="cat-btn" style="--cat-color:var(--green);" onclick="toggle('food')" aria-expanded="false" aria-controls="panel-food">
+        <span class="cat-icon"><span aria-hidden="true">🍎</span></span>
+        <span class="cat-label">Питание и калории</span>
+        <span class="cat-count">5 инструментов</span>
+        <span class="cat-chevron">▼</span>
+      </button>
+      <button class="cat-btn" style="--cat-color:#c94b3b;" onclick="toggle('cardio')" aria-expanded="false" aria-controls="panel-cardio">
+        <span class="cat-icon"><span aria-hidden="true">❤️</span></span>
+        <span class="cat-label">Кардио и тренировки</span>
+        <span class="cat-count">2 инструмента</span>
+        <span class="cat-chevron">▼</span>
+      </button>
+      <button class="cat-btn" style="--cat-color:#c9a84c;" onclick="toggle('pro')" aria-expanded="false" aria-controls="panel-pro">
+        <span class="cat-icon"><span aria-hidden="true">⭐</span></span>
+        <span class="cat-label">PRO — Инструменты FPA</span>
+        <span class="cat-count">10 инструментов</span>
+        <span class="cat-chevron">▼</span>
+      </button>
+    </div>
+
+    <!-- PANEL: Антропометрия -->
+    <div class="cat-panel" id="panel-anthro">
+      <div class="panel-header"><span class="panel-header-icon"><span aria-hidden="true">📐</span></span><span class="panel-header-title">Антропометрия и состав тела</span></div>
+      <a href="anthro.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">📐</span></span><span class="panel-item-text"><span class="panel-item-name">Антропометрия</span><span class="panel-item-hint">Идеальные пропорции по росту</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="imt.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">📊</span></span><span class="panel-item-text"><span class="panel-item-name">Индекс массы тела (ИМТ)</span><span class="panel-item-hint">Оценка соответствия роста и веса</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="bodyfat.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">💪</span></span><span class="panel-item-text"><span class="panel-item-name">Процент жира в теле</span><span class="panel-item-hint">Формула ВМС США по замерам</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="whr.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">⚖️</span></span><span class="panel-item-text"><span class="panel-item-name">Талия к бёдрам (WHR)</span><span class="panel-item-hint">Риск висцерального ожирения</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="ideal_weight.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">🎯</span></span><span class="panel-item-text"><span class="panel-item-name">Идеальный вес</span><span class="panel-item-hint">Четыре научные формулы</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="leanbody.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">🦴</span></span><span class="panel-item-text"><span class="panel-item-name">Сухая масса тела (LBM)</span><span class="panel-item-hint">Масса тела без жировой ткани</span></span><span class="panel-item-arrow">→</span></a>
+    </div>
+
+    <!-- PANEL: Питание -->
+    <div class="cat-panel" id="panel-food">
+      <div class="panel-header"><span class="panel-header-icon"><span aria-hidden="true">🍎</span></span><span class="panel-header-title">Питание и калории</span></div>
+      <a href="calories.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">🔥</span></span><span class="panel-item-text"><span class="panel-item-name">Калькулятор калорий</span><span class="panel-item-hint">Суточная норма TDEE</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="water.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">💧</span></span><span class="panel-item-text"><span class="panel-item-name">Норма воды в день</span><span class="panel-item-hint">Суточная потребность в жидкости</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="bju.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">🥗</span></span><span class="panel-item-text"><span class="panel-item-name">БЖУ калькулятор</span><span class="panel-item-hint">Белки, жиры, углеводы по цели</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="bmr.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">⚡</span></span><span class="panel-item-text"><span class="panel-item-name">Базальный метаболизм (BMR)</span><span class="panel-item-hint">Основной обмен по трём формулам</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="deficit.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">📅</span></span><span class="panel-item-text"><span class="panel-item-name">Дефицит калорий</span><span class="panel-item-hint">Планирование и прогноз похудения</span></span><span class="panel-item-arrow">→</span></a>
+    </div>
+
+    <!-- PANEL: Кардио -->
+    <div class="cat-panel" id="panel-cardio">
+      <div class="panel-header"><span class="panel-header-icon"><span aria-hidden="true">❤️</span></span><span class="panel-header-title">Кардио и тренировки</span></div>
+      <a href="pulse.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">❤️</span></span><span class="panel-item-text"><span class="panel-item-name">Целевая зона пульса</span><span class="panel-item-hint">Зоны интенсивности тренировок</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="maxpulse.html" class="panel-item"><span class="panel-item-icon"><span aria-hidden="true">🫁</span></span><span class="panel-item-text"><span class="panel-item-name">Максимальный пульс (HRmax)</span><span class="panel-item-hint">По пяти формулам с учётом пола</span></span><span class="panel-item-arrow">→</span></a>
+    </div>
+
+    <!-- PANEL: PRO -->
+    <div class="cat-panel" id="panel-pro">
+      <div class="panel-header"><span class="panel-header-icon"><span aria-hidden="true">⭐</span></span><span class="panel-header-title">PRO — Академические инструменты FPA</span></div>
+      <a href="pro_karvonen.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">❤️</span></span><span class="panel-item-text"><span class="panel-item-name">Метод Карвонена <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Точный расчёт тренировочного пульса</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_rufye.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🫀</span></span><span class="panel-item-text"><span class="panel-item-name">Тест Руфье <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Оценка работоспособности сердца</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_ortostatic.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🧍</span></span><span class="panel-item-text"><span class="panel-item-name">Ортостатическая проба <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Оценка восстановления нервной системы</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_martine.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🏃</span></span><span class="panel-item-text"><span class="panel-item-name">Проба Мартинэ <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Реакция ССС на стандартную нагрузку</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="bmr.html#pro" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">⚡</span></span><span class="panel-item-text"><span class="panel-item-name">Миффлин-Джеор PRO <span class="pro-badge">PRO</span></span><span class="panel-item-hint">TDEE + все сценарии — вкладка PRO</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_bju_pro.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🥩</span></span><span class="panel-item-text"><span class="panel-item-name">Нормы БЖУ по целям <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Академический расчёт по учебнику FPA</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="whr.html#pro" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">📏</span></span><span class="panel-item-text"><span class="panel-item-name">Талия / Бёдра PRO <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Висцеральное ожирение — вкладка PRO</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_weight_loss.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">📉</span></span><span class="panel-item-text"><span class="panel-item-name">Безопасный дефицит <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Скорость снижения веса без потери мышц</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="pro_zones5.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🔥</span></span><span class="panel-item-text"><span class="panel-item-name">5 зон пульса Карвонена <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Расширенные зоны интенсивности</span></span><span class="panel-item-arrow">→</span></a>
+      <a href="bio_age.html" class="panel-item pro-item"><span class="panel-item-icon"><span aria-hidden="true">🧬</span></span><span class="panel-item-text"><span class="panel-item-name">Биологический возраст <span class="pro-badge">PRO</span></span><span class="panel-item-hint">Реальный возраст организма по 4 показателям</span></span><span class="panel-item-arrow">→</span></a>
+    </div>
+
+    <footer>
+      <p>© 2026 Дорохин А.О. Все права защищены.</p>
+      <p>Перед использованием проконсультируйтесь со специалистом</p>
+      <p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p>
+    </footer>
+
+  </div></main>
+
+
+  <!-- CONFIRM RESET MODAL -->
+  <div class="modal-backdrop" id="resetModal" onclick="closeModal(event)">
+    <div class="modal-card" role="dialog" aria-modal="true">
+      <span class="modal-icon">🗑️</span>
+      <p class="modal-title">Сбросить все данные?</p>
+      <p class="modal-sub">Все сохранённые измерения и параметры будут удалены. Это действие нельзя отменить.</p>
+      <div class="modal-btns">
+        <button class="modal-btn-cancel" onclick="closeResetModal()">Отмена</button>
+        <button class="modal-btn-confirm" onclick="confirmReset()">Сбросить</button>
+      </div>
+    </div>
+  </div>
+  <script src="history.js"></script>
+  <script src="cookies.js"></script>
+  <script>
+    const PANELS = ['anthro','food','cardio','pro'];
+
+    function toggle(id) {
+      const panel = document.getElementById('panel-' + id);
+      const btn = document.querySelector('[onclick="toggle(\'' + id + '\')"]');
+      const isOpen = panel.classList.contains('open');
+      PANELS.forEach(p => {
+        document.getElementById('panel-' + p).classList.remove('open');
+        const b = document.querySelector('[onclick="toggle(\'' + p + '\')"]');
+        if (b) { b.classList.remove('active'); b.setAttribute('aria-expanded','false'); }
+      });
+      if (!isOpen) {
+        panel.classList.add('open');
+        btn.classList.add('active');
+        btn.setAttribute('aria-expanded','true');
+        setTimeout(() => panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+      }
+    }
+
+    function openResetModal() {
+      document.getElementById('resetModal').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeResetModal() {
+      document.getElementById('resetModal').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function closeModal(e) {
+      // Close on backdrop click (not on card click)
+      if (e.target === document.getElementById('resetModal')) closeResetModal();
+    }
+    function confirmReset() {
+      if (window.HealthStorage) {
+        window.HealthStorage.clearAllData();
+      } else {
+        Object.keys(localStorage).filter(k => k.startsWith('fz_')).forEach(k => localStorage.removeItem(k));
+      }
+      closeResetModal();
+      const btn = document.getElementById('forget-all-btn');
+      btn.textContent = '✓ Готово';
+      setTimeout(() => { btn.textContent = 'Сбросить данные'; }, 2000);
+    }
+    // Close modal on Escape key
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeResetModal();
+    });
+
+    // Render history
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => renderHistory('history-block'));
+    } else { renderHistory('history-block'); }
+  </script>
+</body>
+</html>

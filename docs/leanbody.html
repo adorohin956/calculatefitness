@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Сухая масса тела — Формулы здоровья</title>
+  <meta name="description" content="Калькулятор сухой массы тела (LBM). Узнайте вес мышц, костей и органов без жира по четырём формулам.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="Сухая масса тела — Формулы здоровья">
+  <meta property="og:description" content="Калькулятор сухой массы тела (LBM). Узнайте вес мышц, костей и органов без жира по четырём формулам.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/leanbody.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Сухая масса тела — Формулы здоровья">
+  <meta name="twitter:description" content="Калькулятор сухой массы тела (LBM). Узнайте вес мышц, костей и органов без жира по четырём формулам.">
+
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🦴</span> Сухая масса тела</h1>
+      <p>LBM — масса тела без жира: мышцы, кости, органы</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Сухая масса тела</span></nav>
+    <fieldset><legend>Пол</legend>
+    <div class="radio-group">
+      <label class="radio-option"><input type="radio" name="gender" value="male" checked> Мужской</label>
+      <label class="radio-option"><input type="radio" name="gender" value="female"> Женский</label>
+    </div>
+    </fieldset>
+    <div class="form-group"><label for="height">Рост (см)</label><input type="number" id="height" placeholder="175" min="100" max="250"></div>
+    <div class="form-group"><label for="weight">Вес (кг)</label><input type="number" id="weight" placeholder="70" min="30" max="300"></div>
+    <button class="btn-calculate btn-calc-orange" onclick="calc()">Рассчитать LBM</button>
+    <div id="result">
+      <p class="result-title">Сухая масса тела</p>
+      <div class="result-list" id="lbmList" style="margin-bottom:12px;"></div>
+      <div class="results-grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px;">
+        <div class="result-card"><h4>Среднее LBM</h4><span class="result-value" id="lbmAvg" style="color:#d48a1a">—</span><span class="unit">кг</span></div>
+        <div class="result-card"><h4>Масса жира ~</h4><span class="result-value" id="fatEst">—</span><span class="unit">кг</span></div>
+        <div class="result-card"><h4>% жира ~</h4><span class="result-value" id="fatPct">—</span><span class="unit">%</span></div>
+      </div>
+      <div class="info-block">
+        <h3>Зачем знать LBM?</h3>
+        <p>Сухая масса используется для точного расчёта нормы белка (1.6–2.2 г на кг LBM), формулы Кэтч-МакАрдл для BMR и отслеживания прогресса при наборе мышечной массы.</p>
+      </div>
+    
+      <button class="share-btn" id="share-btn" onclick="shareResult()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+    </div>
+    
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#lbm" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Формулы LBM →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="bodyfat.html" class="related-card"><span class="related-card-icon">💪</span><span class="related-card-name">Процент жира</span><span class="related-card-hint">Формула ВМС США</span></a>
+        <a href="pro_bju_pro.html" class="related-card"><span class="related-card-icon">🥩</span><span class="related-card-name">Нормы БЖУ PRO</span><span class="related-card-hint">Белок от LBM</span></a>
+        <a href="anthro.html" class="related-card"><span class="related-card-icon">📐</span><span class="related-card-name">Антропометрия</span><span class="related-card-hint">Идеальные пропорции</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'leanbody';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p></footer>
+  </div></main>
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+<script>
+  // ── Inline validation helper ──
+  function showErr(fieldId, msg) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    let err = el.parentNode.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error';
+      el.parentNode.appendChild(err);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    el.style.borderColor = 'rgba(255,107,107,0.7)';
+    el.addEventListener('input', function clear() {
+      err.classList.remove('visible');
+      el.style.borderColor = '';
+      el.removeEventListener('input', clear);
+    }, { once: true });
+  }
+  function showFormErr(msg) {
+    // Show error near the calculate button
+    const btn = document.querySelector('.btn-calculate');
+    if (!btn) return;
+    let err = btn.parentNode.querySelector('.form-level-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error form-level-error';
+      err.style.marginBottom = '8px';
+      btn.parentNode.insertBefore(err, btn);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    setTimeout(() => err.classList.remove('visible'), 4000);
+  }
+</script>
+  <script>
+    function calc(){
+      const g=document.querySelector('input[name="gender"]:checked').value;
+      const h=+document.getElementById('height').value;
+      const w=+document.getElementById('weight').value;
+      if(!h){showErr('height','Введите рост');return;}if(!w){showErr('weight','Введите вес');return;}
+      const m=g==='male';
+      const formulas=[
+        {name:'Борнхардт',val:(h*Math.sqrt(w)/22.1)},
+        {name:'Джеймс',   val:m?1.1*w-128*(w/h)**2:1.07*w-148*(w/h)**2},
+        {name:'Хьюм',     val:m?0.3281*w+0.3393*h-29.5336:0.2969*w+0.4165*h-43.2933},
+        {name:'Матью',    val:m?0.407*w+0.267*h-19.2:0.252*w+0.473*h-48.3},
+      ];
+      document.getElementById('lbmList').innerHTML=formulas.map(f=>
+        `<div class="result-item"><span>${f.name}</span><span class="val">${Math.max(0,f.val).toFixed(1)} кг</span></div>`).join('');
+      const avg=formulas.reduce((s,f)=>s+Math.max(0,f.val),0)/formulas.length;
+      const fatMass=Math.max(0,w-avg);
+      const fatPct=Math.round(fatMass/w*100);
+      document.getElementById('lbmAvg').textContent=avg.toFixed(1);
+      document.getElementById('fatEst').textContent=fatMass.toFixed(1);
+      document.getElementById('fatPct').textContent=fatPct;
+      document.getElementById('result').style.display='block';
+      if(window.HistoryModule){HistoryModule.saveToHistory({calc:'leanbody',label:'Сухая масса тела',result:avg.toFixed(1)+' кг LBM',date:HistoryModule.formatDate(),href:'leanbody.html',params:{height:h,weight:w,gender:g}});
+      if(window.App)App.saveCalc('leanbody',{height:h,weight:w,gender:g},avg.toFixed(1)+' кг LBM','Сухая масса тела');}
+    document.getElementById('share-btn').style.display='inline-flex';;
+      document.getElementById('save-history-btn').style.display='flex';
+    }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

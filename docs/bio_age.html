@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Биологический возраст — Формулы здоровья PRO</title>
+  <meta name="description" content="Рассчитайте биологический возраст по пульсу покоя, ИМТ, давлению и уровню активности. Узнайте, насколько ваш организм моложе или старше паспортного возраста.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .bio-result-hero {
+      text-align: center;
+      padding: 28px 20px;
+      background: rgba(180,140,60,0.07);
+      border: 1px solid rgba(180,140,60,0.2);
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      animation: fadeUp .35s ease both;
+    }
+    .bio-age-num {
+      font-size: clamp(52px,12vw,80px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -2px;
+      background: linear-gradient(135deg,#c9a84c,#a06bc8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .bio-age-label { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+    .bio-delta {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 7px 18px; border-radius: 50px;
+      font-size: 13px; font-weight: 600;
+    }
+    .bio-delta.younger { background:rgba(41,168,106,.15); color:var(--green); border:1px solid rgba(41,168,106,.3); }
+    .bio-delta.older   { background:rgba(201,75,59,.15);  color:var(--red); border:1px solid rgba(201,75,59,.3); }
+    .bio-delta.equal   { background:rgba(74,124,107,.15); color:#3d8fd4; border:1px solid rgba(74,124,107,.3); }
+
+    .factor-grid { display:flex; flex-direction:column; gap:7px; margin-top:4px; }
+    .factor-item {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:11px 15px;
+      background:var(--bg);
+      border:1px solid var(--border);
+      border-radius:var(--radius-sm);
+      font-size:12.5px;
+    }
+    .factor-left { display:flex; align-items:center; gap:9px; color:var(--text-mid); }
+    .factor-icon { font-size:15px; }
+    .factor-val  { font-weight:600; }
+    .factor-score {
+      font-size:11px; font-weight:700;
+      padding:3px 10px; border-radius:50px;
+      font-family:var(--font-mono);
+    }
+    .score-great { background:rgba(41,168,106,.15); color:var(--green); }
+    .score-ok    { background:rgba(74,124,107,.15);  color:#3d8fd4; }
+    .score-mid   { background:rgba(212,138,26,.15);  color:#d48a1a; }
+    .score-bad   { background:rgba(201,75,59,.15);   color:var(--red); }
+
+  </style>
+  <meta property="og:title" content="Биологический возраст — Формулы здоровья PRO">
+  <meta property="og:description" content="Рассчитайте биологический возраст по пульсу покоя, ИМТ, давлению и уровню активности. Узнайте, насколько ваш организм моложе или старше паспортного возраста.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/bio_age.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🧬</span> Биологический возраст <span class="pro-badge">PRO</span></h1>
+      <p>Оцените истинный возраст вашего организма по ключевым показателям здоровья</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Биологический возраст</span></nav>
+
+    <div class="formula-box" role="note">
+      Биологический возраст = Паспортный возраст ± корректировка по показателям
+      Корректировка: пульс покоя + ИМТ + АД + уровень активности
+    </div>
+
+    <label for="passport_age">Паспортный возраст (лет)</label>
+    <div class="form-group"><input type="number" id="passport_age" placeholder="35" min="16" max="90" aria-label="Ваш паспортный возраст в годах"></div>
+
+    <label for="rest_hr">Пульс покоя (уд/мин) — измерить утром лёжа</label>
+    <div class="form-group"><input type="number" id="rest_hr" placeholder="65" min="30" max="120" aria-label="Пульс в покое ударов в минуту"></div>
+
+    <label for="height_cm">Рост (см)</label>
+    <div class="form-group"><input type="number" id="height_cm" placeholder="175" min="140" max="220" aria-label="Рост в сантиметрах"></div>
+
+    <label for="weight_kg">Вес (кг)</label>
+    <div class="form-group"><input type="number" id="weight_kg" placeholder="75" min="30" max="200" aria-label="Вес в килограммах"></div>
+
+    <label for="systolic_bp">Систолическое давление (мм рт. ст.) — верхняя цифра</label>
+    <div class="form-group"><input type="number" id="systolic_bp" placeholder="120" min="80" max="220" aria-label="Систолическое давление в мм рт ст"></div>
+
+    <label for="activity_level">Уровень физической активности</label>
+    <div class="form-group">
+      <select id="activity_level" aria-label="Уровень физической активности">
+        <option value="none">Нет — сидячий образ жизни, без тренировок</option>
+        <option value="low">Низкая — 1–2 тренировки в неделю</option>
+        <option value="medium" selected>Средняя — 3–4 тренировки в неделю</option>
+        <option value="high">Высокая — 5+ тренировок или физический труд</option>
+      </select>
+    </div>
+
+    <button class="btn-calculate btn-calc-pro" onclick="calcBioAge()" id="calc-btn">
+      Рассчитать биологический возраст
+    </button>
+
+    <div id="result" style="display:none;">
+      <!-- Hero result -->
+      <div class="bio-result-hero">
+        <div class="bio-age-num" id="bioAgeNum" aria-live="polite">—</div>
+        <p class="bio-age-label">биологический возраст</p>
+        <div class="bio-delta" id="bioDelta"></div>
+      </div>
+
+      <!-- Factor breakdown -->
+      <p class="result-title">Разбор по показателям</p>
+      <div class="factor-grid" id="factorGrid"></div>
+
+      <!-- Recommendation -->
+      <div id="recommendation" class="info-block" style="margin-top:14px;"></div>
+
+      <button class="share-btn" id="share-btn" onclick="shareResult()">
+        <span aria-hidden="true">📋</span> Скопировать результат
+      </button>
+    </div>
+
+    <!-- WHAT IT MEANS -->
+    <div class="pro-explain" style="margin-top:20px;" id="explain-block">
+      <h3>📖 Что такое биологический возраст</h3>
+      <p>Биологический возраст отражает реальное состояние вашего организма — независимо от даты рождения. Два человека одного возраста могут иметь биологический возраст, отличающийся на 10–15 лет, в зависимости от образа жизни.</p>
+      <p style="margin-top:8px;">Показатели в этом калькуляторе выбраны как наиболее доступные для самостоятельного измерения и имеющие сильную связь с биологическим старением по данным исследований.</p>
+    </div>
+
+    <div class="pro-explain" style="margin-top:12px;">
+      <h3>📊 Что означает каждый показатель</h3>
+      <ul>
+        <li><strong>Пульс покоя</strong> — один из лучших маркеров здоровья сердца. &lt;60 уд/мин характерен для тренированных людей; &gt;80 — признак нагрузки на ССС</li>
+        <li><strong>ИМТ</strong> — косвенный маркер состава тела. Норма 18.5–25 соответствует меньшему воспалительному фону и нагрузке на органы</li>
+        <li><strong>Систолическое давление</strong> — &lt;120 мм рт. ст. оптимально. Каждые 10 мм выше 130 значимо увеличивают нагрузку на сосуды</li>
+        <li><strong>Физическая активность</strong> — наиболее мощный управляемый фактор биологического старения. Регулярные тренировки снижают биологический возраст на 3–10 лет</li>
+      </ul>
+    </div>
+
+    <div class="pro-practice" style="margin-top:12px;">
+      <h3>🏋️ Как улучшить показатели</h3>
+      <ul>
+        <li>Снижение пульса покоя на 10 уд/мин достигается 8–12 неделями аэробных тренировок в зоне 2</li>
+        <li>ИМТ лучше оценивать вместе с процентом жира — мышечные люди имеют высокий ИМТ при низком жире</li>
+        <li>Давление нормализуется при снижении соли, весе и регулярных кардиотренировках</li>
+        <li>Повторяй тест раз в 3 месяца для отслеживания динамики</li>
+      </ul>
+    </div>
+
+    <!-- RELATED -->
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#bioage" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: Биологический возраст →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="maxpulse.html" class="related-card"><span class="related-card-icon">🫁</span><span class="related-card-name">Максимальный пульс</span><span class="related-card-hint">HRmax по 5 формулам</span></a>
+        <a href="imt.html" class="related-card"><span class="related-card-icon">📊</span><span class="related-card-name">Индекс массы тела</span><span class="related-card-hint">Оценка ВОЗ</span></a>
+        <a href="pro_karvonen.html" class="related-card"><span class="related-card-icon">❤️</span><span class="related-card-name">Метод Карвонена</span><span class="related-card-hint">Тренировочный пульс</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'bio_age';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p><p>Калькулятор носит ориентировочный характер</p></footer>
+  </div></main>
+
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+  <script>
+  function showErr(id,msg){
+    const el=document.getElementById(id);if(!el)return;
+    let e=el.parentNode.querySelector('.field-error');
+    if(!e){e=document.createElement('div');e.className='field-error';el.parentNode.appendChild(e);}
+    e.innerHTML='⚠️ '+msg;e.classList.add('visible');
+    el.style.borderColor='rgba(255,107,107,0.7)';
+    el.addEventListener('input',function c(){e.classList.remove('visible');el.style.borderColor='';el.removeEventListener('input',c);},{once:true});
+  }
+
+  function scoreHR(hr) {
+    if (hr < 60)  return { pts:  4, label:'Отлично',  cls:'score-great', note:'Пульс спортсмена' };
+    if (hr < 70)  return { pts:  2, label:'Норма',    cls:'score-ok',    note:'Хороший показатель' };
+    if (hr < 80)  return { pts:  0, label:'Умеренно', cls:'score-mid',   note:'Есть резерв улучшения' };
+    return              { pts: -3, label:'Выше нормы',cls:'score-bad',   note:'Нагрузка на сердце' };
+  }
+  function scoreBMI(bmi) {
+    if (bmi < 18.5) return { pts: -1, label:'Дефицит',   cls:'score-mid',   note:'ИМТ ниже нормы' };
+    if (bmi < 25)   return { pts:  3, label:'Норма',     cls:'score-great', note:'Оптимальный ИМТ' };
+    if (bmi < 30)   return { pts:  0, label:'Избыток',   cls:'score-mid',   note:'Умеренно выше нормы' };
+    return               { pts: -3, label:'Ожирение',   cls:'score-bad',   note:'Значимый риск-фактор' };
+  }
+  function scoreBP(sbp) {
+    if (sbp < 120)  return { pts:  3, label:'Оптимальное',cls:'score-great', note:'Идеальное давление' };
+    if (sbp < 130)  return { pts:  1, label:'Норма',      cls:'score-ok',    note:'Нормальное давление' };
+    if (sbp < 140)  return { pts: -1, label:'Высокое',    cls:'score-mid',   note:'Повышенное давление' };
+    return               { pts: -4, label:'Гипертония',  cls:'score-bad',   note:'Требует внимания врача' };
+  }
+  function scoreActivity(act) {
+    const map = {
+      none:   { pts: -5, label:'Нет',    cls:'score-bad',   note:'Самый сильный риск-фактор старения' },
+      low:    { pts:  0, label:'Низкая', cls:'score-mid',   note:'Минимальная активность' },
+      medium: { pts:  3, label:'Средняя',cls:'score-ok',    note:'Хороший уровень' },
+      high:   { pts:  5, label:'Высокая',cls:'score-great', note:'Мощный протектор старения' },
+    };
+    return map[act];
+  }
+
+  function calcBioAge() {
+    const age  = +document.getElementById('passport_age').value;
+    const hr   = +document.getElementById('rest_hr').value;
+    const h    = +document.getElementById('height_cm').value / 100;
+    const w    = +document.getElementById('weight_kg').value;
+    const sbp  = +document.getElementById('systolic_bp').value;
+    const act  =  document.getElementById('activity_level').value;
+
+    if (!age) { showErr('passport_age','Введите паспортный возраст'); return; }
+    if (!hr)  { showErr('rest_hr','Введите пульс покоя'); return; }
+    if (!h)   { showErr('height_cm','Введите рост'); return; }
+    if (!w)   { showErr('weight_kg','Введите вес'); return; }
+    if (!sbp) { showErr('systolic_bp','Введите давление'); return; }
+
+    const bmi = w / (h * h);
+    const sHR  = scoreHR(hr);
+    const sBMI = scoreBMI(bmi);
+    const sBP  = scoreBP(sbp);
+    const sAct = scoreActivity(act);
+
+    const totalPts = sHR.pts + sBMI.pts + sBP.pts + sAct.pts;
+    // Max possible = 4+3+3+5 = 15, Min = -3-3-4-5 = -15
+    // Convert to years: each point ≈ 0.9 year delta
+    const delta = -Math.round(totalPts * 0.9);
+    const bioAge = Math.max(16, age + delta);
+
+    // Render hero
+    document.getElementById('bioAgeNum').textContent = bioAge;
+    const diff = bioAge - age;
+    const deltaEl = document.getElementById('bioDelta');
+    if (diff < 0) {
+      deltaEl.textContent = `на ${Math.abs(diff)} ${plural(Math.abs(diff),'год','года','лет')} моложе паспортного`;
+      deltaEl.className = 'bio-delta younger';
+    } else if (diff > 0) {
+      deltaEl.textContent = `на ${diff} ${plural(diff,'год','года','лет')} старше паспортного`;
+      deltaEl.className = 'bio-delta older';
+    } else {
+      deltaEl.textContent = 'соответствует паспортному возрасту';
+      deltaEl.className = 'bio-delta equal';
+    }
+
+    // Factor breakdown
+    const factors = [
+      { icon:'❤️', label:'Пульс покоя',        val: hr+' уд/мин',          s: sHR  },
+      { icon:'⚖️', label:'ИМТ',                val: bmi.toFixed(1),         s: sBMI },
+      { icon:'🩺', label:'Систолическое АД',   val: sbp+' мм рт. ст.',      s: sBP  },
+      { icon:'🏃', label:'Физическая активность',val: sAct.label,            s: sAct },
+    ];
+    document.getElementById('factorGrid').innerHTML = factors.map(f => `
+      <div class="factor-item">
+        <div class="factor-left">
+          <span class="factor-icon" aria-hidden="true">${f.icon}</span>
+          <span>${f.label}: <span class="factor-val">${f.val}</span></span>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:3px;">
+          <span class="factor-score ${f.s.cls}">${f.s.label}</span>
+          <span style="font-size:10.5px;color:var(--text-muted);">${f.s.note}</span>
+        </div>
+      </div>`).join('');
+
+    // Recommendation
+    const recEl = document.getElementById('recommendation');
+    if (diff <= -3) {
+      recEl.innerHTML = '<h3 style="color:var(--green);font-size:12px;margin-bottom:8px;">✅ Отличный результат</h3><p style="font-size:13px;color:var(--text-muted);">Твои показатели говорят о хорошем состоянии здоровья. Продолжай в том же духе — поддерживай активность и следи за давлением.</p>';
+    } else if (diff <= 0) {
+      recEl.innerHTML = '<h3 style="color:#3d8fd4;font-size:12px;margin-bottom:8px;">👍 Хороший результат</h3><p style="font-size:13px;color:var(--text-muted);">Организм соответствует возрасту или немного моложе. Есть точки роста — посмотри на показатели с жёлтой и красной оценкой.</p>';
+    } else if (diff <= 5) {
+      recEl.innerHTML = '<h3 style="color:#d48a1a;font-size:12px;margin-bottom:8px;">⚠️ Есть над чем работать</h3><p style="font-size:13px;color:var(--text-muted);">Биологический возраст выше паспортного. Приоритет — показатели с красной оценкой. Даже небольшие изменения в образе жизни дадут быстрый результат.</p>';
+    } else {
+      recEl.innerHTML = '<h3 style="color:var(--red);font-size:12px;margin-bottom:8px;">🔴 Требует внимания</h3><p style="font-size:13px;color:var(--text-muted);">Несколько показателей сигнализируют о нагрузке на организм. Рекомендую обратиться к врачу и начать с увеличения физической активности — это даёт самый быстрый эффект.</p>';
+    }
+
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('share-btn').style.display = 'inline-flex';
+
+    if (window.HistoryModule) {
+      HistoryModule.saveToHistory({
+        calc:'bio_age', label:'Биологический возраст',
+        result: bioAge + ' лет' + (diff !== 0 ? ' (' + (diff<0?'−':'+') + Math.abs(diff) + ' к паспорту)':''),
+        date: HistoryModule.formatDate(),
+        href: 'bio_age.html',
+        params: { age, rest_hr: hr, height_cm: Math.round(h*100), weight_kg: w }
+      });
+    }
+    if (window.App) App.saveCalc('bio_age',
+      { age, rest_hr: hr, height_cm: Math.round(h*100), weight_kg: w },
+      bioAge + ' лет' + (diff !== 0 ? ' (' + (diff<0?'−':'+') + Math.abs(diff) + ' к паспорту)':''),
+      'Биологический возраст'
+    );
+  }
+
+  function plural(n, one, few, many) {
+    const mod10 = n % 10, mod100 = n % 100;
+    if (mod10 === 1 && mod100 !== 11) return one;
+    if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) return few;
+    return many;
+  }
+
+  function shareResult() {
+    const bioAge = document.getElementById('bioAgeNum').textContent;
+    const delta  = document.getElementById('bioDelta').textContent;
+    const text   = 'Биологический возраст: ' + bioAge + ' лет (' + delta + ') | calculatefitness.pro';
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('share-btn');
+      btn.innerHTML = '✓ Скопировано!';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.innerHTML = '<span aria-hidden="true">📋</span> Скопировать результат'; btn.classList.remove('copied'); }, 2000);
+    }).catch(() => {});
+  }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>

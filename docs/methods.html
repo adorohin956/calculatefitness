@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>Методология расчётов — Формулы здоровья</title>
+  <meta name="description" content="Научная база всех калькуляторов: формулы ИМТ, Миффлина, WHR, зон пульса по Карвонену, нормы БЖУ по FPA и методика расчёта биологического возраста.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .method-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:var(--radius-md);padding:24px;margin-bottom:12px;scroll-margin-top:24px;}
+    .method-card h2{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+    .method-card h3{font-size:12px;font-weight:600;color:var(--text-mid);margin:14px 0 7px;text-transform:uppercase;letter-spacing:.8px;}
+    .method-card p,.method-card li{color:var(--text-muted);line-height:1.75;font-size:13px;}
+    .method-card ul{padding-left:16px;}.method-card li{margin-bottom:4px;}
+    .formula{background:rgba(0,0,0,.35);color:rgba(74,124,107,.9);padding:12px 15px;border-radius:var(--radius-sm);font-family:var(--font-mono);font-size:12.5px;margin:10px 0;overflow-x:auto;border:1px solid rgba(74,124,107,.15);line-height:1.6;}
+    .note-info{padding:10px 14px;border-radius:var(--radius-sm);font-size:12.5px;margin:10px 0;color:var(--text-muted);line-height:1.65;background:rgba(74,124,107,.08);border-left:2px solid rgba(74,124,107,.4);}
+    .note-warn{padding:10px 14px;border-radius:var(--radius-sm);font-size:12.5px;margin:10px 0;color:var(--text-muted);line-height:1.65;background:rgba(212,138,26,.08);border-left:2px solid rgba(212,138,26,.4);}
+    .toc{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:var(--radius-md);padding:18px 20px;margin-bottom:24px;}
+    .toc-title{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:12px;}
+    .toc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:4px;}
+    .toc-link{font-size:12.5px;color:var(--text-muted);text-decoration:none;padding:5px 8px;border-radius:6px;display:block;transition:all .15s;}
+    .toc-link:hover{color:var(--accent);background:rgba(74,124,107,.08);}
+    .section-group{font-size:10.5px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin:24px 0 14px;display:flex;align-items:center;gap:12px;}
+    .section-group::after{content:'';flex:1;height:1px;background:var(--border);}
+    .calc-link{font-size:11.5px;color:var(--accent);text-decoration:none;margin-left:auto;opacity:.7;transition:opacity .15s;white-space:nowrap;}
+    .calc-link:hover{opacity:1;}
+  </style>
+  <meta property="og:title" content="Методология расчётов — Формулы здоровья">
+  <meta property="og:description" content="Научная база всех калькуляторов: формулы ИМТ, Миффлина, WHR, зон пульса по Карвонену, нормы БЖУ по FPA и методика расчёта биологического возраста.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/methods.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+
+    <header class="calc-header">
+      <h1><span aria-hidden="true">📖</span> Методология расчётов</h1>
+      <p>Научная база всех формул и инструментов сайта</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>Методы расчёта</span></nav>
+
+    <!-- TABLE OF CONTENTS -->
+    <div class="toc">
+      <p class="toc-title">Содержание</p>
+      <div class="toc-grid">
+        <a href="#anthro"   class="toc-link">📐 Антропометрия и состав</a>
+        <a href="#imt"      class="toc-link">📊 ИМТ</a>
+        <a href="#bodyfat"  class="toc-link">💪 Процент жира</a>
+        <a href="#whr"      class="toc-link">⚖️ Талия к бёдрам</a>
+        <a href="#ideal"    class="toc-link">🎯 Идеальный вес</a>
+        <a href="#lbm"      class="toc-link">🦴 Сухая масса тела</a>
+        <a href="#calories" class="toc-link">🔥 Калории и BMR</a>
+        <a href="#bju"      class="toc-link">🥩 Нормы БЖУ</a>
+        <a href="#water"    class="toc-link">💧 Норма воды</a>
+        <a href="#deficit"  class="toc-link">📅 Дефицит калорий</a>
+        <a href="#pulse"    class="toc-link">❤️ Зоны пульса</a>
+        <a href="#karvonen" class="toc-link">❤️ Метод Карвонена</a>
+        <a href="#rufye"    class="toc-link">🫀 Тест Руфье</a>
+        <a href="#bioage"   class="toc-link">🧬 Биологический возраст</a>
+      </div>
+    </div>
+
+    <!-- ════ АНТРОПОМЕТРИЯ И СОСТАВ ════ -->
+    <p class="section-group">Антропометрия и состав тела</p>
+
+    <div class="method-card" id="anthro">
+      <h2>📐 Антропометрия — идеальные пропорции <a href="anthro.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Расчёт идеальных пропорций тела на основе роста. Коэффициенты основаны на классических исследованиях гармоничного телосложения.</p>
+      <h3>Формулы</h3>
+      <div class="formula">
+        Грудь (муж)   = рост × 0,535 | Грудь (жен)   = рост × 0,510
+        Талия (муж)   = рост × 0,452 | Талия (жен)   = рост × 0,375
+        Бёдра (муж)   = рост × 0,540 | Бёдра (жен)   = рост × 0,565
+        Бицепс (муж)  = рост × 0,208 | Бицепс (жен)  = рост × 0,167
+      </div>
+      <div class="note-info">Результаты ориентировочные. Генетика, тип телосложения и мышечная масса влияют на реальные пропорции.</div>
+    </div>
+
+    <div class="method-card" id="imt">
+      <h2>📊 Индекс массы тела (ИМТ) <a href="imt.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Международный стандарт ВОЗ для оценки соответствия веса и роста.</p>
+      <div class="formula">ИМТ = Вес (кг) / Рост² (м)</div>
+      <h3>Категории ВОЗ</h3>
+      <ul>
+        <li>Менее 18,5 — Дефицит массы тела</li>
+        <li>18,5 – 24,9 — Норма</li>
+        <li>25,0 – 29,9 — Избыточный вес</li>
+        <li>30,0 – 34,9 — Ожирение I степени</li>
+        <li>35,0 – 39,9 — Ожирение II степени</li>
+        <li>40 и выше — Ожирение III степени</li>
+      </ul>
+      <div class="note-warn">ИМТ не учитывает соотношение мышечной и жировой массы. У спортсменов с высокой мышечной массой ИМТ может быть завышен.</div>
+    </div>
+
+    <div class="method-card" id="bodyfat">
+      <h2>💪 Процент жира — формула ВМС США <a href="bodyfat.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Метод US Navy для оценки процента жира по окружностям тела без калипера.</p>
+      <div class="formula">
+        Мужчины: % жира = 86,010 × log₁₀(талия − шея) − 70,041 × log₁₀(рост) + 36,76
+        Женщины: % жира = 163,205 × log₁₀(талия + бёдра − шея) − 97,684 × log₁₀(рост) − 78,387
+      </div>
+      <div class="note-info">Погрешность метода ±3–4%. Для более точного результата используйте калипер или DEXA-сканирование.</div>
+    </div>
+
+    <div class="method-card" id="whr">
+      <h2>⚖️ Соотношение талии к бёдрам (WHR) <a href="whr.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Индекс распределения жира. Высокий WHR указывает на висцеральное ожирение — наиболее опасный тип с точки зрения метаболических рисков.</p>
+      <div class="formula">WHR = Окружность талии (см) / Окружность бёдер (см)</div>
+      <h3>Нормы ВОЗ</h3>
+      <ul>
+        <li>Мужчины: норма &lt; 0,90; риск ≥ 0,90; высокий риск ≥ 1,00</li>
+        <li>Женщины: норма &lt; 0,80; риск ≥ 0,80; высокий риск ≥ 0,85</li>
+      </ul>
+    </div>
+
+    <div class="method-card" id="ideal">
+      <h2>🎯 Идеальный вес <a href="ideal_weight.html" class="calc-link">↗ Калькулятор</a></h2>
+      <h3>Формула Брока</h3>
+      <div class="formula">Мужчины: Рост (см) − 100 | Женщины: Рост (см) − 110</div>
+      <h3>Формула Лоренца</h3>
+      <div class="formula">(Рост − 100) − (Рост − 150) / 2</div>
+      <h3>Индекс Кетле (ИМТ = 22)</h3>
+      <div class="formula">22 × Рост² (м)</div>
+      <h3>Формула Девайна</h3>
+      <div class="formula">Мужчины: 50 + 2,3 × (рост/2,54 − 60) | Женщины: 45,5 + 2,3 × (рост/2,54 − 60)</div>
+      <div class="note-info">Все формулы ориентировочные. Результат показывает «среднестатистический» идеал, не учитывая мышечную массу и тип телосложения.</div>
+    </div>
+
+    <div class="method-card" id="lbm">
+      <h2>🦴 Сухая масса тела (LBM) <a href="leanbody.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Масса тела без жировой ткани: мышцы, кости, органы, вода. Используется для точного расчёта нормы белка и формулы Кэтч-МакАрдл.</p>
+      <div class="formula">
+        Хьюм (муж): 0,3281×вес + 0,3393×рост − 29,5336
+        Хьюм (жен): 0,2969×вес + 0,4165×рост − 43,2933
+        Матью (муж): 0,407×вес + 0,267×рост − 19,2
+        Матью (жен): 0,252×вес + 0,473×рост − 48,3
+      </div>
+    </div>
+
+    <!-- ════ ПИТАНИЕ И КАЛОРИИ ════ -->
+    <p class="section-group">Питание и калории</p>
+
+    <div class="method-card" id="calories">
+      <h2>🔥 Калории и базальный метаболизм <a href="bmr.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Наиболее точная из распространённых формул расчёта суточной потребности в калориях.</p>
+      <h3>Формула Миффлина-Сан Жеора (рекомендуется)</h3>
+      <div class="formula">
+        Мужчины: BMR = 10×вес + 6,25×рост − 5×возраст + 5
+        Женщины: BMR = 10×вес + 6,25×рост − 5×возраст − 161
+        TDEE = BMR × коэффициент активности
+      </div>
+      <h3>Коэффициенты активности</h3>
+      <ul>
+        <li>1,200 — Минимальный (сидячий образ жизни)</li>
+        <li>1,375 — Низкий (1–3 тренировки в неделю)</li>
+        <li>1,550 — Умеренный (3–5 тренировок)</li>
+        <li>1,725 — Высокий (6–7 тренировок или физический труд)</li>
+        <li>1,900 — Экстремальный</li>
+      </ul>
+      <h3>Харрис-Бенедикт (1984)</h3>
+      <div class="formula">
+        Мужчины: 88,36 + 13,4×вес + 4,8×рост − 5,7×возраст
+        Женщины: 447,6 + 9,2×вес + 3,1×рост − 4,3×возраст
+      </div>
+      <div class="note-info">Погрешность всех формул ±10–15%. Верифицируйте расчёт: питайтесь по TDEE 10–14 дней и оцените изменение веса.</div>
+    </div>
+
+    <div class="method-card" id="bju">
+      <h2>🥩 Нормы БЖУ по FPA <a href="pro_bju_pro.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Нормы из учебника FPA (Федерация профессиональных атлетов). Белок считается в г/кг, не в процентах.</p>
+      <h3>Белок (г/кг массы тела)</h3>
+      <ul>
+        <li>0,8–1,2 — Малоподвижный образ жизни, без цели изменить состав</li>
+        <li>1,2–1,8 — Активные тренировки без цели снизить жир</li>
+        <li>1,5–2,2 — Активные тренировки + снижение жира</li>
+      </ul>
+      <h3>Жиры и углеводы</h3>
+      <ul>
+        <li>Жиры: 0,8–1,5 г/кг — не менее 20% от суточных калорий</li>
+        <li>Углеводы: 3–5 г/кг (низкая активность) / 5–7 г/кг (умеренная) / 7–10 г/кг (тяжёлые тренировки)</li>
+      </ul>
+      <div class="formula">Калорийность: белки и углеводы = 4 ккал/г | жиры = 9 ккал/г</div>
+      <div class="note-warn">При избыточном весе белок рассчитывается от рекомендуемого веса, а не от фактического.</div>
+    </div>
+
+    <div class="method-card" id="water">
+      <h2>💧 Норма воды <a href="water.html" class="calc-link">↗ Калькулятор</a></h2>
+      <div class="formula">
+        Базовая: 30–35 мл × кг веса
+        С тренировками: (вес × 30) + (минуты тренировки × 10) мл/день
+      </div>
+      <h3>Рекомендации</h3>
+      <ul>
+        <li>Пить равномерно в течение дня, не залпами</li>
+        <li>Во время тренировки: 150–200 мл каждые 15–20 минут</li>
+        <li>В жаркую погоду увеличивать норму на 20–30%</li>
+      </ul>
+      <div class="note-warn">Не более 1 л в час — избыток воды создаёт нагрузку на почки.</div>
+    </div>
+
+    <div class="method-card" id="deficit">
+      <h2>📅 Дефицит калорий и темп похудения <a href="deficit.html" class="calc-link">↗ Калькулятор</a></h2>
+      <div class="formula">1 кг жира ≈ 7700 ккал | Безопасный темп: 0,5–1 кг/нед = −500–1000 ккал/день</div>
+      <h3>Почему нельзя худеть быстро</h3>
+      <ul>
+        <li>При дефиците более 1000 ккал/день — потеря мышечной массы</li>
+        <li>Снижение основного обмена (BMR) — меньше мышц = меньше калорий в покое</li>
+        <li>Гормональные нарушения (тестостерон, лептин, T3)</li>
+        <li>«Эффект качелей» — после диеты жир восстанавливается быстрее мышц</li>
+      </ul>
+      <div class="note-info">Минимум калорий: 1200 ккал/день для женщин, 1500 ккал/день для мужчин.</div>
+    </div>
+
+    <!-- ════ КАРДИО И ТРЕНИРОВКИ ════ -->
+    <p class="section-group">Кардио и тренировки</p>
+
+    <div class="method-card" id="pulse">
+      <h2>❤️ Зоны пульса <a href="pulse.html" class="calc-link">↗ Калькулятор</a></h2>
+      <h3>Максимальный пульс — Хаскель и Фокс (классика)</h3>
+      <div class="formula">HRmax = 220 − возраст</div>
+      <h3>Танака (2001, более точная)</h3>
+      <div class="formula">HRmax = 208 − 0,7 × возраст</div>
+      <h3>5 зон интенсивности (от HRmax)</h3>
+      <ul>
+        <li>50–60% — Восстановление, жиросжигание</li>
+        <li>60–70% — Аэробная база, выносливость</li>
+        <li>70–80% — Аэробная мощность, ПАНО</li>
+        <li>80–90% — Анаэробная, скорость</li>
+        <li>90–100% — Максимальная, ВИИТ</li>
+      </ul>
+    </div>
+
+    <div class="method-card" id="karvonen">
+      <h2>❤️ Метод Карвонена <a href="pro_karvonen.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Более точный расчёт тренировочного пульса с учётом индивидуального резерва ЧСС.</p>
+      <div class="formula">
+        Резерв ЧСС = HRmax − ЧСС покоя
+        ЧСС тренировочная = Резерв × % интенсивности + ЧСС покоя
+      </div>
+      <div class="note-info">Тренированный человек имеет низкий пульс покоя (40–55 уд/мин), что увеличивает резерв и сдвигает зоны вверх. Метод Карвонена учитывает это, в отличие от простой формулы 220 − возраст × %.</div>
+    </div>
+
+    <div class="method-card" id="rufye">
+      <h2>🫀 Тест Руфье и функциональные пробы <a href="pro_rufye.html" class="calc-link">↗ Тест Руфье</a></h2>
+      <h3>Индекс Руфье</h3>
+      <div class="formula">((P1 + P2 + P3) − 200) / 10</div>
+      <p>Где P1 — пульс в покое, P2 — после 30 приседаний, P3 — через 1 мин отдыха.</p>
+      <ul>
+        <li>&lt; 3 — Отлично | 3–6 — Хорошо | 6–9 — Удовлетворительно | &gt; 9 — Плохо</li>
+      </ul>
+      <h3>Ортостатическая проба</h3>
+      <p>Прирост ЧСС при переходе из положения лёжа в стоя: 10–12 уд/мин — норма, более 20 — недовосстановление.</p>
+      <h3>Проба Мартинэ</h3>
+      <p>Прирост ЧСС после 20 приседаний: &lt;25% — хорошо, 25–50% — норма, &gt;75% — неудовлетворительно.</p>
+    </div>
+
+    <!-- ════ PRO ════ -->
+    <p class="section-group">PRO — Академические инструменты</p>
+
+    <div class="method-card" id="bioage">
+      <h2>🧬 Биологический возраст <a href="bio_age.html" class="calc-link">↗ Калькулятор</a></h2>
+      <p>Интегральная оценка биологического возраста на основе доступных показателей.</p>
+      <h3>Система баллов</h3>
+      <ul>
+        <li><strong>Пульс покоя:</strong> &lt;60 = +4, 60–70 = +2, 70–80 = 0, &gt;80 = −3</li>
+        <li><strong>ИМТ:</strong> 18,5–25 = +3, 25–30 = 0, &gt;30 = −3, &lt;18,5 = −1</li>
+        <li><strong>Систолическое АД:</strong> &lt;120 = +3, 120–130 = +1, 130–140 = −1, &gt;140 = −4</li>
+        <li><strong>Активность:</strong> высокая = +5, средняя = +3, низкая = 0, нет = −5</li>
+      </ul>
+      <div class="formula">Биологический возраст = Паспортный возраст − сумма баллов × 0,9</div>
+      <div class="note-info">Калькулятор носит ориентировочный характер. Для точной оценки биологического возраста используются более сложные протоколы (теломеры, эпигенетические маркеры, фитнес-тесты).</div>
+    </div>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer>
+      <p>© 2026 Дорохин А.О. Все права защищены.</p>
+      <p>Источники: ВОЗ, учебник FPA, Mifflin et al. 1990, Tanaka et al. 2001</p>
+    </footer>
+  </div></main>
+
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+</body>
+</html>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#E8E1D6">
+  <title>5 зон пульса — Формулы здоровья PRO</title>
+  <meta name="description" content="5 тренировочных зон пульса по методу Карвонена. Подробное описание каждой зоны, целей, упражнений и времени тренировок.">
+  <link rel="icon" href="favicon.ico">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .zone5-card{border-radius:var(--radius-md);padding:18px 18px;margin-bottom:10px;border:1px solid var(--border);}
+    .zone5-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;}
+    .zone5-left{flex:1;}
+    .zone5-name{font-size:14px;font-weight:600;margin-bottom:3px;}
+    .zone5-pct{font-size:11px;color:var(--text-muted);}
+    .zone5-bpm{text-align:right;flex-shrink:0;}
+    .zone5-bpm-num{font-size:22px;font-weight:700;display:block;}
+    .zone5-bpm-unit{font-size:11px;color:var(--text-muted);}
+    .zone5-bar-wrap{height:4px;background:rgba(0,0,0,0.04);border-radius:2px;margin:8px 0;}
+    .zone5-bar-fill{height:100%;border-radius:2px;}
+    .zone5-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
+    .zone5-tag{font-size:11.5px;color:var(--text-muted);background:var(--bg);padding:6px 10px;border-radius:var(--radius-sm);}
+    .zone5-tag strong{display:block;font-size:10.5px;color:var(--text-muted);margin-bottom:2px;text-transform:uppercase;letter-spacing:0.8px;}
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Satoshi:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500" rel="stylesheet">
+  <meta property="og:title" content="5 зон пульса — Формулы здоровья PRO">
+  <meta property="og:description" content="5 тренировочных зон пульса по методу Карвонена. Подробное описание каждой зоны, целей, упражнений и времени тренировок.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://calculatefitness.pro/pro_zones5.html">
+  <meta property="og:image" content="https://calculatefitness.pro/og-image.jpg">
+  <meta property="og:locale" content="ru_RU">
+  <meta property="og:site_name" content="Формулы здоровья">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="5 зон пульса — Формулы здоровья PRO">
+  <meta name="twitter:description" content="5 тренировочных зон пульса по методу Карвонена. Подробное описание каждой зоны, целей, упражнений и времени тренировок.">
+
+</head>
+<body>
+  <a href="#main-content" class="skip-nav">Перейти к содержимому</a>
+  <noscript><p style="padding:40px;text-align:center;">Для работы калькуляторов необходим JavaScript.</p></noscript>
+  <main class="page"><div class="card" id="main-content">
+    <div id="user-widget"></div>
+    <div id="calc-nav" style="display:none;text-align:right;margin-bottom:8px;font-size:12px;"><a href="/history.php" style="color:var(--text-muted);text-decoration:none;margin-right:14px;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📊 История расчётов</a><a href="/diary.php" style="color:var(--text-muted);text-decoration:none;" onmouseover="this.style.color='var(--sage)'" onmouseout="this.style.color='var(--text-muted)'">📏 Дневник замеров</a></div>
+    <header class="calc-header">
+      <h1><span aria-hidden="true">🔥</span> 5 зон пульса Карвонена <span class="pro-badge">PRO</span></h1>
+      <p>Расширенные зоны интенсивности тренировок на основе резерва ЧСС</p>
+    </header>
+    <nav aria-label="Breadcrumb" class="breadcrumb"><a href="index.html">Главная</a> → <span>5 зон пульса Карвонена</span></nav>
+
+    <div class="formula-box">
+      ЧСС зоны = (ЧСС макс − ЧСС покоя) × % + ЧСС покоя
+    </div>
+
+    <div class="form-group"><label for="age">Возраст (лет)</label><input type="number" id="age" placeholder="30" min="14" max="90"></div>
+    <div class="form-group"><label for="rest_hr">ЧСС в покое (уд/мин) — утром лёжа</label><input type="number" id="rest_hr" placeholder="62" min="30" max="100"></div>
+    <button class="btn-calculate btn-calc-pro" onclick="calc()">Рассчитать 5 зон</button>
+
+    <div id="result">
+      <div class="results-grid" style="grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;">
+        <div class="result-card"><h4>ЧСС макс</h4><span class="result-value" id="rMax" style="color:#c9a84c">—</span><span class="unit">уд/мин</span></div>
+        <div class="result-card"><h4>ЧСС покоя</h4><span class="result-value" id="rRest" style="color:#a06bc8">—</span><span class="unit">уд/мин</span></div>
+        <div class="result-card"><h4>Резерв</h4><span class="result-value" id="rReserve" style="color:#3d8fd4">—</span><span class="unit">уд/мин</span></div>
+      </div>
+      <div id="zones5"></div>
+    </div>
+
+    <div class="pro-explain">
+      <h3>📖 Зачем 5 зон, а не 3</h3>
+      <p>Три зоны — это упрощение для начинающих. Пять зон дают точнее понять, что происходит с организмом на каждом уровне интенсивности. Это критично при построении периодизации тренировок: нельзя постоянно работать в зоне 3–4, организм не успевает восстанавливаться. Профессиональные программы строятся на соотношении 80% зона 1–2 и 20% зона 3–5.</p>
+      <p style="margin-top:8px;"><strong>ПАНО</strong> (порог анаэробного обмена) находится примерно на границе зон 3–4. Тренировки чуть ниже ПАНО развивают аэробные возможности; выше — анаэробные.</p>
+    </div>
+
+    <div class="pro-practice">
+      <h3>🏋️ Как строить тренировки по зонам</h3>
+      <ul>
+        <li><strong>80% тренировочного времени</strong> — зоны 1–2. Это база аэробной системы и жиросжигания</li>
+        <li><strong>Зона 3</strong> — «серая зона»: слишком тяжело для базы, слишком легко для роста. Использовать умеренно</li>
+        <li><strong>Зона 4–5</strong> — только 1–2 раза в неделю, с полным восстановлением между</li>
+        <li>Начинающим — первые 2–3 месяца только зоны 1–2</li>
+        <li>Контролируй зону по ЧСС-монитору или пульсоксиметру, не по ощущениям</li>
+      </ul>
+    
+      <button class="share-btn" id="share-btn" onclick="shareResult()">📋 Скопировать результат</button>
+      <button class="save-history-btn" id="save-history-btn" style="display:none" onclick="handleSaveHistory()">
+        💾 Сохранить в историю
+      </button>
+    </div>
+
+    
+    <p style="text-align:center;margin-top:10px;font-size:11px;"><a href="methods.html#karvonen" style="color:var(--text-muted);text-decoration:none;border-bottom:1px solid var(--border);padding-bottom:1px;transition:color .2s,border-color .2s;" onmouseover="this.style.color='var(--sage)';this.style.borderColor='var(--sage)'" onmouseout="this.style.color='var(--text-muted)';this.style.borderColor='var(--border)'">Как считается: 5 зон интенсивности →</a></p>
+    <div style="margin-top:28px;">
+      <p style="font-size:11px;font-weight:500;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:14px;display:flex;align-items:center;gap:12px;">Также может пригодиться<span style="flex:1;height:1px;background:var(--border);display:inline-block;"></span></p>
+      <div class="related-grid">
+        <a href="pro_karvonen.html" class="related-card"><span class="related-card-icon">❤️</span><span class="related-card-name">Метод Карвонена PRO</span><span class="related-card-hint">Точный пульс</span></a>
+        <a href="pulse.html" class="related-card"><span class="related-card-icon">❤️</span><span class="related-card-name">Целевая зона пульса</span><span class="related-card-hint">Базовые зоны</span></a>
+        <a href="pro_rufye.html" class="related-card"><span class="related-card-icon">🫀</span><span class="related-card-name">Тест Руфье PRO</span><span class="related-card-hint">Оценка сердца</span></a>
+      </div>
+    </div>
+
+    
+    <!-- ── ОТЗЫВЫ ── -->
+    <div class="reviews-section" id="reviews-section">
+      <p class="section-label">Оценить калькулятор</p>
+      <div class="rating-widget" id="rating-widget">
+        <div class="stars-row" id="stars-row" role="group" aria-label="Оценка от 1 до 5 звёзд">
+          <button class="star-btn" data-v="1" aria-label="1 звезда">★</button>
+          <button class="star-btn" data-v="2" aria-label="2 звезды">★</button>
+          <button class="star-btn" data-v="3" aria-label="3 звезды">★</button>
+          <button class="star-btn" data-v="4" aria-label="4 звезды">★</button>
+          <button class="star-btn" data-v="5" aria-label="5 звёзд">★</button>
+        </div>
+        <div class="rating-comment-wrap" id="rating-comment-wrap" style="display:none">
+          <textarea id="rating-comment" class="rating-textarea" placeholder="Комментарий (необязательно, до 500 символов)" maxlength="500" rows="3"></textarea>
+          <button class="rating-submit-btn" id="rating-submit-btn" onclick="submitRating()">Отправить оценку</button>
+        </div>
+        <div class="rating-login-hint" id="rating-login-hint" style="display:none">
+          <a href="#" onclick="App.showAuthModal();return false">Войдите или создайте аккаунт</a>, чтобы оставить оценку
+        </div>
+      </div>
+      <div class="rating-summary" id="rating-summary" style="display:none">
+        <span class="rating-avg" id="rating-avg">—</span>
+        <span class="rating-stars-display" id="rating-stars-display"></span>
+        <span class="rating-count" id="rating-count"></span>
+      </div>
+      <div class="reviews-list" id="reviews-list"></div>
+    </div>
+
+    <!-- ── КОНСУЛЬТАЦИЯ ── -->
+    <div class="consult-section" id="consult-section">
+      <p class="section-label">Записаться на консультацию</p>
+      <p class="consult-hint">Персональный тренер Дорохин А.О. поможет разобрать результаты и составить план тренировок и питания</p>
+      <div class="consult-fields">
+        <div class="form-group"><label for="c-name">Ваше имя <span style="color:#ff6b6b">*</span></label><input type="text" id="c-name" placeholder="Алексей" maxlength="100"></div>
+        <div class="form-group"><label for="c-phone">Телефон</label><input type="tel" id="c-phone" placeholder="+7 999 000 00 00"></div>
+        <div class="form-group">
+          <label for="c-goal">Цель</label>
+          <select id="c-goal">
+            <option value="lose">Похудение</option>
+            <option value="gain">Набор массы</option>
+            <option value="health">Здоровье</option>
+            <option value="sport">Спортивные результаты</option>
+            <option value="other">Другое</option>
+          </select>
+        </div>
+        <div class="form-group"><label for="c-msg">Сообщение</label><textarea id="c-msg" class="rating-textarea" placeholder="Опишите ситуацию или вопрос..." rows="3" maxlength="1000"></textarea></div>
+      </div>
+      <button class="consult-submit-btn" id="consult-submit-btn" onclick="submitConsult()">Отправить заявку</button>
+      <div id="consult-ok" style="display:none;color:var(--green);font-size:13px;margin-top:10px;text-align:center;">✓ Заявка отправлена! Мы свяжемся с вами в ближайшее время.</div>
+    </div>
+
+    <script>
+    // ── Reviews + Consult block ───────────────────────────────────────────────
+    (function(){
+      const CALC = 'pro_zones5';
+      let selectedRating = 0;
+
+      async function loadReviews() {
+        try {
+          const data = await App.getReviews(CALC);
+          renderSummary(data.stats, data.my_rating);
+          renderList(data.reviews);
+          renderMyRating(data.my_rating);
+        } catch(e) { /* silent */ }
+      }
+
+      function renderSummary(s, myRating) {
+        if (!s || !s.total) return;
+        const avg = parseFloat(s.avg_rating) || 0;
+        document.getElementById('rating-avg').textContent = avg.toFixed(1);
+        document.getElementById('rating-stars-display').textContent = starsStr(avg);
+        document.getElementById('rating-count').textContent = '(' + s.total + ' ' + pluralRu(s.total,'оценка','оценки','оценок') + ')';
+        document.getElementById('rating-summary').style.display = 'flex';
+      }
+
+      function renderMyRating(myRating) {
+        const user = App.getUser();
+        const starsRow = document.getElementById('stars-row');
+        const commentWrap = document.getElementById('rating-comment-wrap');
+        const loginHint = document.getElementById('rating-login-hint');
+        if (!user || !user.nickname) {
+          starsRow.style.display = 'none';
+          loginHint.style.display = 'block';
+          return;
+        }
+        if (myRating) {
+          selectedRating = myRating.rating;
+          highlightStars(myRating.rating);
+          if (myRating.comment) document.getElementById('rating-comment').value = myRating.comment;
+          commentWrap.style.display = 'block';
+          document.getElementById('rating-submit-btn').textContent = 'Обновить оценку';
+        }
+      }
+
+      function renderList(reviews) {
+        if (!reviews || !reviews.length) return;
+        const el = document.getElementById('reviews-list');
+        el.innerHTML = reviews.slice(0,5).map(r => `
+          <div class="review-item">
+            <div class="review-header">
+              <span class="review-nick">${escHtml(r.nickname)}</span>
+              <span class="review-stars">${starsStr(r.rating)}</span>
+            </div>
+            ${r.comment ? `<p class="review-comment">${escHtml(r.comment)}</p>` : ''}
+          </div>`).join('');
+      }
+
+      function starsStr(n) { const f=Math.round(n); return '★'.repeat(f)+'☆'.repeat(5-f); }
+      function escHtml(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+      function pluralRu(n,one,few,many) {
+        const m10=n%10,m100=n%100;
+        if(m10===1&&m100!==11)return one;
+        if(m10>=2&&m10<=4&&(m100<10||m100>=20))return few;
+        return many;
+      }
+
+      function highlightStars(val) {
+        document.querySelectorAll('.star-btn').forEach(btn=>{
+          btn.classList.toggle('active',+btn.dataset.v<=val);
+        });
+      }
+
+      document.querySelectorAll('.star-btn').forEach(btn=>{
+        btn.addEventListener('mouseover',()=>highlightStars(+btn.dataset.v));
+        btn.addEventListener('mouseout', ()=>highlightStars(selectedRating));
+        btn.addEventListener('click',()=>{
+          const user=App.getUser();
+          if(!user||!user.nickname){App.showAuthModal();return;}
+          selectedRating=+btn.dataset.v;
+          highlightStars(selectedRating);
+          document.getElementById('rating-comment-wrap').style.display='block';
+        });
+      });
+
+      window.submitRating = async function() {
+        if(!selectedRating) return App.showToast('Выберите оценку');
+        const comment=document.getElementById('rating-comment').value.trim();
+        const btn=document.getElementById('rating-submit-btn');
+        btn.disabled=true; btn.textContent='Сохраняем...';
+        try {
+          await App.saveReview(CALC,selectedRating,comment);
+          App.showToast('✓ Оценка сохранена!');
+          btn.textContent='Обновить оценку';
+          loadReviews();
+        } catch(e) { App.showToast('⚠️ '+(e.message||'Ошибка')); }
+        finally { btn.disabled=false; }
+      };
+
+      window.submitConsult = async function() {
+        const name=document.getElementById('c-name').value.trim();
+        if(!name){document.getElementById('c-name').focus();App.showToast('Введите имя');return;}
+        const phone=document.getElementById('c-phone').value.trim();
+        const goal=document.getElementById('c-goal').value;
+        const msg=document.getElementById('c-msg').value.trim();
+        const btn=document.getElementById('consult-submit-btn');
+        btn.disabled=true; btn.textContent='Отправляем...';
+        try {
+          await App.sendContact(name,phone,goal,msg);
+          document.getElementById('consult-ok').style.display='block';
+          btn.style.display='none';
+        } catch(e) {
+          App.showToast('⚠️ '+(e.message||'Ошибка'));
+          btn.disabled=false; btn.textContent='Отправить заявку';
+        }
+      };
+
+      document.addEventListener('DOMContentLoaded', loadReviews);
+    })();
+    </script>
+
+    <a href="index.html" class="back-link">← К калькуляторам</a>
+    <footer><p><a href="methods.html" style="color:var(--text-muted);text-decoration:none;font-size:11px;transition:color .2s;" onmouseover="this.style.color='var(--text-mid)'" onmouseout="this.style.color='var(--text-muted)'">📖 Методология расчётов</a></p><p>© 2026 Дорохин А.О.</p></footer>
+  </div></main>
+  <script src="history.js"></script>
+  <script src="/app.js"></script>
+  <script src="cookies.js"></script>
+<script>
+  // ── Inline validation helper ──
+  function showErr(fieldId, msg) {
+    const el = document.getElementById(fieldId);
+    if (!el) return;
+    let err = el.parentNode.querySelector('.field-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error';
+      el.parentNode.appendChild(err);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    el.style.borderColor = 'rgba(255,107,107,0.7)';
+    el.addEventListener('input', function clear() {
+      err.classList.remove('visible');
+      el.style.borderColor = '';
+      el.removeEventListener('input', clear);
+    }, { once: true });
+  }
+  function showFormErr(msg) {
+    // Show error near the calculate button
+    const btn = document.querySelector('.btn-calculate');
+    if (!btn) return;
+    let err = btn.parentNode.querySelector('.form-level-error');
+    if (!err) {
+      err = document.createElement('div');
+      err.className = 'field-error form-level-error';
+      err.style.marginBottom = '8px';
+      btn.parentNode.insertBefore(err, btn);
+    }
+    err.innerHTML = '⚠️ ' + msg;
+    err.classList.add('visible');
+    setTimeout(() => err.classList.remove('visible'), 4000);
+  }
+</script>
+  <script>
+    const ZONES5=[
+      {
+        num:1, name:'Зона 1 — Восстановление', pct:[0.50,0.60], color:'#3d8fd4',
+        goal:'Активное восстановление, разминка, заминка',
+        exercises:'Ходьба, лёгкий велосипед, спокойное плавание',
+        who:'Все уровни подготовки, особенно начинающие и в дни отдыха',
+        time:'30–90 мин. До 80% объёма тренировок в неделю',
+        effect:'Жиросжигание 50–60% калорий из жиров. Восстановление ССС. Снижение кортизола.'
+      },
+      {
+        num:2, name:'Зона 2 — Аэробная база', pct:[0.60,0.70], color:'#29a86a',
+        goal:'Развитие аэробной выносливости, максимальное жиросжигание',
+        exercises:'Лёгкий бег, велосипед, эллипс в комфортном темпе (можно говорить)',
+        who:'Все. Основа большинства тренировок',
+        time:'30–120 мин. Основа недельного объёма',
+        effect:'Оптимальное соотношение жир/углеводы как топливо. Развитие митохондрий. Снижение ЧСС покоя.'
+      },
+      {
+        num:3, name:'Зона 3 — Аэробная мощность', pct:[0.70,0.80], color:'#c9a84c',
+        goal:'Повышение аэробной мощности, сдвиг ПАНО вверх',
+        exercises:'Умеренный бег, кардио в среднем темпе (речь затруднена)',
+        who:'Подготовленные люди с базой зоны 1–2',
+        time:'20–45 мин. 1–2 раза в неделю',
+        effect:'Рост ударного объёма сердца. Повышение лактатного порога. Углеводы — основное топливо.'
+      },
+      {
+        num:4, name:'Зона 4 — Анаэробная', pct:[0.80,0.90], color:'#e07020',
+        goal:'Развитие скорости, анаэробных возможностей',
+        exercises:'Быстрый бег, интервальные тренировки (говорить сложно)',
+        who:'Тренированные спортсмены',
+        time:'10–20 мин суммарно. Не чаще 1–2 раз в неделю',
+        effect:'Рост лактатного порога. Увеличение МПК. Требует полного восстановления (48–72 ч).'
+      },
+      {
+        num:5, name:'Зона 5 — Максимальная', pct:[0.90,1.00], color:'#c94b3b',
+        goal:'Максимальное развитие МПК, скоростных качеств',
+        exercises:'ВИИТ-спринты, максимальные усилия (говорить невозможно)',
+        who:'Только опытные атлеты с годами базы',
+        time:'5–10 мин суммарно. Не чаще 1 раза в неделю',
+        effect:'Максимальный рост МПК. Высокий риск травм и перетренированности без должного восстановления.'
+      },
+    ];
+
+    function calc(){
+      const age=+document.getElementById('age').value;
+      const rest=+document.getElementById('rest_hr').value;
+      if(!age){showErr('age','Введи возраст');return;}if(!rest){showErr('rest_hr','Введи ЧСС покоя');return;}
+      const maxHR=220-age;
+      const reserve=maxHR-rest;
+      document.getElementById('rMax').textContent=maxHR;
+      document.getElementById('rRest').textContent=rest;
+      document.getElementById('rReserve').textContent=reserve;
+
+      document.getElementById('zones5').innerHTML=ZONES5.map(z=>{
+        const lo=Math.round(reserve*z.pct[0]+rest);
+        const hi=Math.round(reserve*z.pct[1]+rest);
+        const barW=(z.pct[1]-z.pct[0])*5*100; // visual width
+        return `<div class="zone5-card" style="background:${z.color}0d;border-color:${z.color}33;">
+          <div class="zone5-top">
+            <div class="zone5-left">
+              <div class="zone5-name" style="color:${z.color}">${z.name}</div>
+              <div class="zone5-pct">${Math.round(z.pct[0]*100)}–${Math.round(z.pct[1]*100)}% резерва ЧСС</div>
+            </div>
+            <div class="zone5-bpm">
+              <span class="zone5-bpm-num" style="color:${z.color}">${lo}–${hi}</span>
+              <span class="zone5-bpm-unit">уд/мин</span>
+            </div>
+          </div>
+          <div class="zone5-bar-wrap"><div class="zone5-bar-fill" style="width:${Math.round(z.pct[1]*100)}%;background:${z.color};opacity:0.5;"></div></div>
+          <div class="zone5-grid">
+            <div class="zone5-tag"><strong>Цель</strong>${z.goal}</div>
+            <div class="zone5-tag"><strong>Упражнения</strong>${z.exercises}</div>
+            <div class="zone5-tag"><strong>Кому</strong>${z.who}</div>
+            <div class="zone5-tag"><strong>Время/частота</strong>${z.time}</div>
+          </div>
+          <div style="margin-top:8px;font-size:11.5px;color:var(--text-muted);padding:8px 10px;background:var(--bg);border-radius:6px;">${z.effect}</div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('result').style.display='block';
+      if(window.HistoryModule){if(window.HistoryModule)HistoryModule.saveToHistory({calc:'pro_zones5',label:'5 зон пульса Карвонена',result:maxHR+' уд/мин HRmax',date:HistoryModule.formatDate(),href:'pro_zones5.html',params:{age,rest_hr:rest}});
+      if(window.App)App.saveCalc('pro_zones5',{age,rest_hr:rest},maxHR+' уд/мин HRmax','5 зон пульса Карвонена');}
+    document.getElementById('share-btn').style.display='inline-flex';;
+      document.getElementById('save-history-btn').style.display='flex';
+    }
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded',function(){
+    var u=App.getUser();
+    if(u&&u.nickname){var n=document.getElementById('calc-nav');if(n)n.style.display='block';}
+  });
+  </script>
+</body>
+</html>
